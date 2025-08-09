@@ -186,6 +186,11 @@
             </div>
             
             <div class="form-group">
+                <label for="description">📝 小说描述 *</label>
+                <textarea id="description" required placeholder="请输入小说的详细描述，包括故事背景、主要情节、特色等..." rows="4"></textarea>
+            </div>
+            
+            <div class="form-group">
                 <label for="price">💰 价格 ($) *</label>
                 <input type="number" id="price" required min="0" step="0.01" value="9.99">
             </div>
@@ -400,11 +405,12 @@
             
             const author = document.getElementById('author').value.trim();
             const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value.trim();
             const freeChapters = 3; // 固定前3章免费
             const price = parseFloat(document.getElementById('price').value);
             
-            if (!author || !category) {
-                showError('请填写作者和类别');
+            if (!author || !category || !description) {
+                showError('请填写作者、类别和小说描述');
                 return;
             }
             
@@ -426,7 +432,7 @@
                 const novelData = {
                     title: parsedNovel.title,
                     author: author,
-                    description: `${parsedNovel.title} - 完整版小说，包含${parsedNovel.chapters.length}个章节。`,
+                    description: description,
                     category: category,
                     cover_image: 'https://via.placeholder.com/300x400',
                     original_language: 'zh-CN',
@@ -515,6 +521,7 @@
             parsedNovel = null;
             document.getElementById('author').value = '';
             document.getElementById('category').value = '';
+            document.getElementById('description').value = '';
             document.getElementById('price').value = '9.99';
             fileInput.innerHTML = '<p>📄 <strong>点击这里</strong>选择文件或拖拽TXT文件到这里</p><small style="color: #666; margin-top: 10px; display: block;">支持拖拽上传，文件格式：.txt</small>';
             document.getElementById('autoInfo').style.display = 'none';

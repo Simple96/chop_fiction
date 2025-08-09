@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -16,11 +16,14 @@ export default function ReaderScreen() {
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null)
   const [isPurchased, setIsPurchased] = useState(false)
   const [loading, setLoading] = useState(true)
+  const scrollViewRef = useRef<ScrollView>(null)
 
   useEffect(() => {
     loadChapter()
     checkPurchaseStatus()
     updateReadingProgress()
+    // 滚动到页面顶部
+    scrollViewRef.current?.scrollTo({ y: 0, animated: false })
   }, [chapterNumber])
 
   async function loadChapter() {
@@ -164,10 +167,14 @@ export default function ReaderScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.novelTitle}>{novel.title}</Text>
-        <Text style={styles.chapterTitle}>Chapter {chapterNumber}: {currentChapter.title}</Text>
+        <Text style={styles.chapterTitle}>{currentChapter.title}</Text>
       </View>
 
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+      <ScrollView 
+        ref={scrollViewRef}
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+      >
         {isChapterLocked ? (
           <View style={styles.lockedContent}>
             <Text style={styles.lockedTitle}>This chapter requires purchase</Text>
