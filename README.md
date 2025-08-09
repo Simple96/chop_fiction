@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# chop_fiction
-=======
 # 小说阅读器 - AI缩写中国网络小说
 
 一个基于 React Native (Expo) + Supabase 的移动阅读应用，专门用于阅读AI缩写的中国网络小说。
@@ -142,4 +139,3 @@ npm run web     # 浏览器（可能需要额外配置）
 ## 许可证
 
 MIT License 
->>>>>>> master
