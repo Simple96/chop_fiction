@@ -623,7 +623,7 @@ body {
 .auth-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #C0392B, #D4AF37);
+    background: linear-gradient(135deg, #2C3E50, #34495E);
     color: white;
     border: none;
     border-radius: 8px;
@@ -636,8 +636,8 @@ body {
 
 .auth-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.4);
-    background: linear-gradient(135deg, #A93226, #B8860B);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
+    background: linear-gradient(135deg, #34495E, #2C3E50);
 }
 
 .auth-switch {
