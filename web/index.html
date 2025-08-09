@@ -518,6 +518,133 @@
             color: #D4AF37;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 30px 30px 20px;
+            background: linear-gradient(135deg, #2C3E50, #34495E);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-body h3 {
+            color: #2C3E50;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .modal-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body h4 {
+            color: #34495E;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body p {
+            color: #34495E;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-body ul {
+            color: #34495E;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+
+        .modal-body strong {
+            color: #2C3E50;
+        }
+
+        /* Modal responsive design */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                max-height: 85vh;
+            }
+
+            .modal-header {
+                padding: 20px 20px 15px;
+            }
+
+            .modal-header h2 {
+                font-size: 24px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .close {
+                font-size: 28px;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero-title {
@@ -812,7 +939,7 @@
                     <div class="contact-info">
                         <p><i class="fas fa-map-marker-alt"></i> 1455 Market Street, Suite 1600<br>San Francisco, CA 94103</p>
                         <p><i class="fas fa-envelope"></i> hello@novica.com</p>
-                        <p><i class="fas fa-phone"></i> +1 (415) 555-0123</p>
+                        <p><i class="fas fa-phone"></i> +1 (415) 972-9036</p>
                     </div>
                 </div>
             </div>
@@ -822,12 +949,178 @@
                     <p>&copy; 2025 Novica. All rights reserved.</p>
                 </div>
                 <div class="footer-legal">
-                    <a href="#privacy">Privacy Policy</a>
-                    <a href="#terms">Terms of Service</a>
-                    <a href="#cookies">Cookie Policy</a>
+                    <a href="#" onclick="openModal('privacy-modal')">Privacy Policy</a>
+                    <a href="#" onclick="openModal('terms-modal')">Terms of Service</a>
+                    <a href="#" onclick="openModal('cookie-modal')">Cookie Policy</a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Privacy Policy</h2>
+                <span class="close" onclick="closeModal('privacy-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>Last updated:</strong> January 2025</p>
+                
+                <h3>1. Information We Collect</h3>
+                <p>At Novica, we collect information you provide directly to us, such as when you create an account, subscribe to our service, or contact us for support. This may include your name, email address, and reading preferences.</p>
+                
+                <h3>2. How We Use Your Information</h3>
+                <p>We use your information to:</p>
+                <ul>
+                    <li>Provide and maintain our AI storytelling service</li>
+                    <li>Personalize your reading experience</li>
+                    <li>Send you updates about new stories and features</li>
+                    <li>Improve our AI authors and story generation capabilities</li>
+                </ul>
+                
+                <h3>3. Information Sharing</h3>
+                <p>We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:</p>
+                <ul>
+                    <li>With your consent</li>
+                    <li>To comply with legal obligations</li>
+                    <li>To protect our rights and prevent fraud</li>
+                </ul>
+                
+                <h3>4. Data Security</h3>
+                <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+                
+                <h3>5. Your Rights</h3>
+                <p>You have the right to access, update, or delete your personal information. You may also opt out of certain communications from us.</p>
+                
+                <h3>6. Contact Us</h3>
+                <p>If you have any questions about this Privacy Policy, please contact us at hello@novica.com or +1 (415) 972-9036.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div id="terms-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Terms of Service</h2>
+                <span class="close" onclick="closeModal('terms-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>Last updated:</strong> January 2025</p>
+                
+                <h3>1. Acceptance of Terms</h3>
+                <p>By accessing or using Novica's AI storytelling platform, you agree to be bound by these Terms of Service and all applicable laws and regulations.</p>
+                
+                <h3>2. Service Description</h3>
+                <p>Novica provides an AI-powered storytelling platform where unique AI authors create original stories across various genres. Our service includes access to our library of AI-generated content and personalized recommendations.</p>
+                
+                <h3>3. User Accounts</h3>
+                <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must provide accurate and complete information when creating your account.</p>
+                
+                <h3>4. Acceptable Use</h3>
+                <p>You agree not to:</p>
+                <ul>
+                    <li>Use our service for any illegal or unauthorized purpose</li>
+                    <li>Attempt to reverse engineer our AI technology</li>
+                    <li>Share your account credentials with others</li>
+                    <li>Interfere with the proper functioning of our platform</li>
+                </ul>
+                
+                <h3>5. Intellectual Property</h3>
+                <p>All content generated by our AI authors, including stories, characters, and plots, remains the intellectual property of Novica. Users are granted a limited license to read and enjoy the content for personal use only.</p>
+                
+                <h3>6. Limitation of Liability</h3>
+                <p>Novica shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our service.</p>
+                
+                <h3>7. Termination</h3>
+                <p>We reserve the right to terminate or suspend your account at our sole discretion, without prior notice, for conduct that violates these Terms of Service.</p>
+                
+                <h3>8. Contact Information</h3>
+                <p>For questions about these Terms of Service, contact us at hello@novica.com.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Policy Modal -->
+    <div id="cookie-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cookie Policy</h2>
+                <span class="close" onclick="closeModal('cookie-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>Last updated:</strong> January 2025</p>
+                
+                <h3>1. What Are Cookies</h3>
+                <p>Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and analyzing how you use our service.</p>
+                
+                <h3>2. Types of Cookies We Use</h3>
+                
+                <h4>Essential Cookies</h4>
+                <p>These cookies are necessary for our website to function properly. They enable basic features like page navigation, account login, and security features.</p>
+                
+                <h4>Analytics Cookies</h4>
+                <p>We use analytics cookies to understand how visitors interact with our website. This helps us improve our service and user experience.</p>
+                
+                <h4>Preference Cookies</h4>
+                <p>These cookies remember your reading preferences, language settings, and other customization options to enhance your experience.</p>
+                
+                <h4>Marketing Cookies</h4>
+                <p>We may use marketing cookies to show you relevant content and advertisements based on your interests and reading history.</p>
+                
+                <h3>3. Managing Cookies</h3>
+                <p>You can control and manage cookies in various ways:</p>
+                <ul>
+                    <li>Browser settings: Most browsers allow you to view, delete, and block cookies</li>
+                    <li>Opt-out tools: You can use industry opt-out tools for marketing cookies</li>
+                    <li>Account preferences: Logged-in users can manage preferences in their account settings</li>
+                </ul>
+                
+                <h3>4. Third-Party Cookies</h3>
+                <p>Our website may contain links to third-party services that use their own cookies. We are not responsible for the cookie practices of these external sites.</p>
+                
+                <h3>5. Updates to This Policy</h3>
+                <p>We may update this Cookie Policy from time to time. Any changes will be posted on this page with an updated revision date.</p>
+                
+                <h3>6. Contact Us</h3>
+                <p>If you have questions about our use of cookies, please contact us at hello@novica.com.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
