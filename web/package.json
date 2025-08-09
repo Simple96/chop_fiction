@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx http-server . -p 3000 -o --cors",
     "dev": "npx http-server . -p 3000 -o --cors -c-1",
-    "build": "npm run minify && npm run optimize",
+    "build": "npm run minify && npm run optimize && echo 'Web build completed for deployment'",
     "minify": "npm run minify:css && npm run minify:js",
     "minify:css": "npx clean-css-cli styles/main.css -o styles/main.min.css",
     "minify:js": "npx terser js/*.js -c -m -o js/app.min.js",
