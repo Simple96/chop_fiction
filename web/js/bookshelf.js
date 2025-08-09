@@ -65,8 +65,8 @@ class BookshelfManager {
         if (this.bookshelfItems.length === 0) {
             Utils.showEmpty(
                 container, 
-                '书架空空如也', 
-                '去发现页面寻找喜欢的小说吧'
+                'Your bookshelf is empty', 
+                'Go to Discover page to find novels you like'
             );
             return;
         }
@@ -97,21 +97,21 @@ class BookshelfManager {
             : 0;
         
         const progressText = bookshelfItem.last_read_chapter 
-            ? `已读至第 ${bookshelfItem.last_read_chapter} 章 (${progress}%)`
-            : '尚未开始阅读';
+            ? `Read to Chapter ${bookshelfItem.last_read_chapter} (${progress}%)`
+            : 'Not started reading';
         
         card.innerHTML = `
-            <img src="${novel.cover_image || 'https://via.placeholder.com/100x150?text=暂无封面'}" 
+            <img src="${novel.cover_image || 'https://via.placeholder.com/100x150?text=No+Cover'}" 
                  alt="${novel.title}" 
                  class="book-cover"
                  onerror="Utils.handleImageError(this)">
             <div class="book-info">
                 <h3 class="book-title" title="${novel.title}">${novel.title}</h3>
-                <p class="book-author">作者：${novel.author}</p>
+                <p class="book-author">Author: ${novel.author}</p>
                 <p class="book-progress">${progressText}</p>
                 <div class="book-meta">
                     <span class="book-category">${Utils.getCategoryDisplayName(novel.category)}</span>
-                    <span class="book-chapters">${novel.total_chapters} 章</span>
+                    <span class="book-chapters">${novel.total_chapters} chapters</span>
                     ${novel.price > 0 ? `<span class="book-price">${Utils.formatPrice(novel.price)}</span>` : ''}
                 </div>
             </div>
@@ -140,11 +140,11 @@ class BookshelfManager {
         prompt.className = 'empty-state';
         prompt.innerHTML = `
             <i class="fas fa-user-lock"></i>
-            <h3>请先登录</h3>
-            <p>登录后即可查看您的个人书架</p>
+            <h3>Please Login First</h3>
+            <p>Login to view your personal bookshelf</p>
             <button class="btn btn-primary" onclick="window.authManager.showAuthScreen()">
                 <i class="fas fa-sign-in-alt"></i>
-                <span>立即登录</span>
+                <span>Login Now</span>
             </button>
         `;
         
@@ -312,8 +312,8 @@ class BookshelfManager {
     // 清空书架（危险操作）
     async clearBookshelf() {
         window.navigationManager.showConfirmDialog(
-            '清空书架',
-            '确定要清空整个书架吗？此操作无法撤销。',
+            'Clear Bookshelf',
+            'Are you sure you want to clear the entire bookshelf? This action cannot be undone.',
             async () => {
                 try {
                     const promises = this.bookshelfItems.map(item => 
@@ -322,11 +322,11 @@ class BookshelfManager {
                     
                     await Promise.all(promises);
                     
-                    Utils.showNotification('书架已清空', 'success');
+                    Utils.showNotification('Bookshelf cleared', 'success');
                     this.loadBookshelf();
                 } catch (error) {
                     console.error('Clear bookshelf error:', error);
-                    Utils.showNotification('清空书架失败', 'error');
+                    Utils.showNotification('Failed to clear bookshelf', 'error');
                 }
             }
         );

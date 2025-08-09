@@ -42,7 +42,7 @@ class ProfileManager {
         }
         
         this.loading = true;
-        Utils.showLoading(container, '加载用户信息中...');
+        Utils.showLoading(container, 'Loading profile...');
         
         try {
             // 并行加载用户资料和统计信息
@@ -67,7 +67,7 @@ class ProfileManager {
             this.renderProfile(container);
         } catch (error) {
             console.error('Load profile error:', error);
-            Utils.showError(container, '加载用户信息失败，请稍后重试');
+            Utils.showError(container, 'Failed to load profile, please try again later');
         } finally {
             this.loading = false;
         }
@@ -111,24 +111,24 @@ class ProfileManager {
             <div class="profile-header">
                 <div class="profile-avatar">
                     ${avatarUrl ? 
-                        `<img src="${avatarUrl}" alt="头像" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` :
+                        `<img src="${avatarUrl}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` :
                         `<span>${displayName.charAt(0).toUpperCase()}</span>`
                     }
                 </div>
                 <div class="profile-info">
                     <h2>${displayName}</h2>
                     <p>${user.email}</p>
-                    <p style="color: #999; font-size: 14px;">加入时间：${joinDate}</p>
+                    <p style="color: #999; font-size: 14px;">Joined: ${joinDate}</p>
                 </div>
             </div>
             <div class="profile-actions">
                 <button class="btn btn-outline edit-profile-btn">
                     <i class="fas fa-edit"></i>
-                    <span>编辑资料</span>
+                    <span>Edit Profile</span>
                 </button>
                 <button class="btn btn-outline change-password-btn">
                     <i class="fas fa-key"></i>
-                    <span>修改密码</span>
+                    <span>Change Password</span>
                 </button>
             </div>
         `;
@@ -156,24 +156,24 @@ class ProfileManager {
         card.innerHTML = `
             <h3 style="margin-bottom: 20px; color: #2C3E50;">
                 <i class="fas fa-chart-line"></i>
-                阅读统计
+                Reading Statistics
             </h3>
             <div class="profile-stats">
                 <div class="profile-stat">
                     <div class="profile-stat-value">${this.userStats?.bookshelfCount || 0}</div>
-                    <div class="profile-stat-label">书架藏书</div>
+                    <div class="profile-stat-label">Bookshelf</div>
                 </div>
                 <div class="profile-stat">
                     <div class="profile-stat-value">${this.userStats?.purchaseCount || 0}</div>
-                    <div class="profile-stat-label">已购小说</div>
+                    <div class="profile-stat-label">Purchased</div>
                 </div>
                 <div class="profile-stat">
                     <div class="profile-stat-value">${this.calculateReadingDays()}</div>
-                    <div class="profile-stat-label">阅读天数</div>
+                    <div class="profile-stat-label">Reading Days</div>
                 </div>
                 <div class="profile-stat">
                     <div class="profile-stat-value">${this.calculateTotalChapters()}</div>
-                    <div class="profile-stat-label">已读章节</div>
+                    <div class="profile-stat-label">Chapters Read</div>
                 </div>
             </div>
         `;
@@ -189,32 +189,32 @@ class ProfileManager {
         card.innerHTML = `
             <h3 style="margin-bottom: 20px; color: #2C3E50;">
                 <i class="fas fa-cog"></i>
-                设置与帮助
+                Settings & Help
             </h3>
             <div class="profile-actions-list">
                 <button class="profile-action-item reading-settings-btn">
                     <i class="fas fa-book-reader"></i>
-                    <span>阅读设置</span>
+                    <span>Reading Settings</span>
                     <i class="fas fa-chevron-right"></i>
                 </button>
                 <button class="profile-action-item notification-settings-btn">
                     <i class="fas fa-bell"></i>
-                    <span>通知设置</span>
+                    <span>Notifications</span>
                     <i class="fas fa-chevron-right"></i>
                 </button>
                 <button class="profile-action-item help-btn">
                     <i class="fas fa-question-circle"></i>
-                    <span>帮助与反馈</span>
+                    <span>Help & Feedback</span>
                     <i class="fas fa-chevron-right"></i>
                 </button>
                 <button class="profile-action-item about-btn">
                     <i class="fas fa-info-circle"></i>
-                    <span>关于应用</span>
+                    <span>About App</span>
                     <i class="fas fa-chevron-right"></i>
                 </button>
                 <button class="profile-action-item logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>退出登录</span>
+                    <span>Logout</span>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
@@ -314,11 +314,11 @@ class ProfileManager {
         prompt.className = 'empty-state';
         prompt.innerHTML = `
             <i class="fas fa-user-lock"></i>
-            <h3>请先登录</h3>
-            <p>登录后即可查看和管理您的个人资料</p>
+            <h3>Please Login First</h3>
+            <p>Login to view and manage your profile</p>
             <button class="btn btn-primary" onclick="window.authManager.showAuthScreen()">
                 <i class="fas fa-sign-in-alt"></i>
-                <span>立即登录</span>
+                <span>Login Now</span>
             </button>
         `;
         
@@ -334,29 +334,29 @@ class ProfileManager {
         const confirmBtn = document.getElementById('modal-confirm');
         const cancelBtn = document.getElementById('modal-cancel');
         
-        modalTitle.textContent = '编辑资料';
+        modalTitle.textContent = 'Edit Profile';
         modalBody.innerHTML = `
             <form id="edit-profile-form">
                 <div class="form-group">
-                    <label for="edit-username">用户名</label>
+                    <label for="edit-username">Username</label>
                     <input type="text" 
                            id="edit-username" 
                            name="username" 
                            value="${this.userProfile?.username || ''}"
-                           placeholder="请输入用户名">
+                           placeholder="Enter username">
                 </div>
                 <div class="form-group">
-                    <label for="edit-avatar">头像URL（可选）</label>
+                    <label for="edit-avatar">Avatar URL (Optional)</label>
                     <input type="url" 
                            id="edit-avatar" 
                            name="avatar_url" 
                            value="${this.userProfile?.avatar_url || ''}"
-                           placeholder="请输入头像图片链接">
+                           placeholder="Enter avatar image URL">
                 </div>
             </form>
         `;
         
-        confirmBtn.textContent = '保存';
+        confirmBtn.textContent = 'Save';
         
         // 清除之前的事件监听器
         const newConfirmBtn = confirmBtn.cloneNode(true);
@@ -373,7 +373,7 @@ class ProfileManager {
                 avatar_url: formData.get('avatar_url')?.trim() || null
             };
             
-            newConfirmBtn.textContent = '保存中...';
+            newConfirmBtn.textContent = 'Saving...';
             newConfirmBtn.disabled = true;
             
             const result = await window.supabaseClient.updateProfile(updates);
@@ -384,7 +384,7 @@ class ProfileManager {
                 this.loadProfile(); // 重新加载资料
             }
             
-            newConfirmBtn.textContent = '保存';
+            newConfirmBtn.textContent = 'Save';
             newConfirmBtn.disabled = false;
         });
         
@@ -410,31 +410,31 @@ class ProfileManager {
         const confirmBtn = document.getElementById('modal-confirm');
         const cancelBtn = document.getElementById('modal-cancel');
         
-        modalTitle.textContent = '修改密码';
+        modalTitle.textContent = 'Change Password';
         modalBody.innerHTML = `
             <form id="change-password-form">
                 <div class="form-group">
-                    <label for="new-password">新密码</label>
+                    <label for="new-password">New Password</label>
                     <input type="password" 
                            id="new-password" 
                            name="password" 
                            required 
                            minlength="6"
-                           placeholder="请输入新密码（至少6个字符）">
+                           placeholder="Enter new password (at least 6 characters)">
                 </div>
                 <div class="form-group">
-                    <label for="confirm-password">确认密码</label>
+                    <label for="confirm-password">Confirm Password</label>
                     <input type="password" 
                            id="confirm-password" 
                            name="confirmPassword" 
                            required 
                            minlength="6"
-                           placeholder="请再次输入新密码">
+                           placeholder="Enter new password again">
                 </div>
             </form>
         `;
         
-        confirmBtn.textContent = '修改密码';
+        confirmBtn.textContent = 'Change Password';
         
         // 清除之前的事件监听器
         const newConfirmBtn = confirmBtn.cloneNode(true);
@@ -450,16 +450,16 @@ class ProfileManager {
             const confirmPassword = formData.get('confirmPassword');
             
             if (password !== confirmPassword) {
-                Utils.showNotification('两次输入的密码不一致', 'error');
+                Utils.showNotification('Passwords do not match', 'error');
                 return;
             }
             
             if (password.length < 6) {
-                Utils.showNotification('密码至少需要6个字符', 'error');
+                Utils.showNotification('Password must be at least 6 characters', 'error');
                 return;
             }
             
-            newConfirmBtn.textContent = '修改中...';
+            newConfirmBtn.textContent = 'Changing...';
             newConfirmBtn.disabled = true;
             
             const result = await window.authManager.updatePassword(password);
@@ -468,7 +468,7 @@ class ProfileManager {
                 modal.classList.add('hidden');
             }
             
-            newConfirmBtn.textContent = '修改密码';
+            newConfirmBtn.textContent = 'Change Password';
             newConfirmBtn.disabled = false;
         });
         
@@ -489,32 +489,32 @@ class ProfileManager {
     // 显示阅读设置
     showReadingSettings() {
         window.navigationManager.showInfoDialog(
-            '阅读设置',
-            '阅读设置功能正在开发中，敬请期待！\n\n即将支持：\n• 字体大小调节\n• 背景颜色设置\n• 行间距调整\n• 夜间模式'
+            'Reading Settings',
+            'Reading settings feature is under development, stay tuned!\n\nComing soon:\n• Font size adjustment\n• Background color settings\n• Line spacing adjustment\n• Night mode'
         );
     }
     
     // 显示通知设置
     showNotificationSettings() {
         window.navigationManager.showInfoDialog(
-            '通知设置',
-            '通知设置功能正在开发中，敬请期待！\n\n即将支持：\n• 新章节更新提醒\n• 优惠活动通知\n• 系统消息推送'
+            'Notification Settings',
+            'Notification settings feature is under development, stay tuned!\n\nComing soon:\n• New chapter update reminders\n• Promotional activity notifications\n• System message push'
         );
     }
     
     // 显示帮助信息
     showHelp() {
         window.navigationManager.showInfoDialog(
-            '帮助与反馈',
-            `欢迎使用 ${CONFIG.APP_NAME}！\n\n常见问题：\n• 如何添加小说到书架？\n  在小说详情页点击"添加到书架"按钮\n\n• 如何购买付费章节？\n  在小说详情页点击"购买小说"按钮\n\n• 忘记密码怎么办？\n  在登录页面点击"忘记密码"链接\n\n如需更多帮助，请联系客服。`
+            'Help & Feedback',
+            `Welcome to ${CONFIG.APP_NAME}!\n\nFAQ:\n• How to add novels to bookshelf?\n  Click "Add to Bookshelf" button on novel detail page\n\n• How to purchase paid chapters?\n  Click "Purchase Novel" button on novel detail page\n\n• Forgot password?\n  Click "Forgot Password" link on login page\n\nFor more help, please contact customer service.`
         );
     }
     
     // 显示关于信息
     showAbout() {
         window.navigationManager.showInfoDialog(
-            '关于应用',
-            `${CONFIG.APP_NAME}\n版本：1.0.0\n\n${CONFIG.APP_DESCRIPTION}\n\n这是一个专门为阅读AI缩写的中国网络小说而设计的应用。我们致力于为用户提供优质的阅读体验，让您能够快速了解经典网络小说的精彩内容。\n\n© 2024 ${CONFIG.APP_NAME}. All rights reserved.`
+            'About App',
+            `${CONFIG.APP_NAME}\nVersion: 1.0.0\n\n${CONFIG.APP_DESCRIPTION}\n\nThis is an app designed specifically for reading AI-condensed Chinese web novels. We are committed to providing users with a quality reading experience, allowing you to quickly understand the exciting content of classic web novels.\n\n© 2024 ${CONFIG.APP_NAME}. All rights reserved.`
         );
     }
     
