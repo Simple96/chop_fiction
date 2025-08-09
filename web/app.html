@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novica - AI Condensed Chinese Web Novels</title>
+    <link rel="icon" type="image/png" href="./assets/app_logo.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="./styles/main.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading display -->
+        <div id="loading" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+        
+        <!-- 主应用容器 -->
+        <div id="main-app" class="main-app hidden">
+            <!-- 导航栏 -->
+            <nav id="navbar" class="navbar">
+                <div class="nav-brand">
+                    <img src="./assets/app_logo.png" alt="Logo" class="nav-logo">
+                    <span class="nav-title">Novica</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#" data-screen="bookshelf" class="nav-item active">
+                        <i class="fas fa-book"></i>
+                        <span>Bookshelf</span>
+                    </a>
+                    <a href="#" data-screen="recommendations" class="nav-item">
+                        <i class="fas fa-star"></i>
+                        <span>Discover</span>
+                    </a>
+                    <a href="#" data-screen="categories" class="nav-item">
+                        <i class="fas fa-th-large"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="#" data-screen="profile" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </div>
+                <div class="nav-user">
+                    <button id="logout-btn" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- 主要内容区域 -->
+            <main id="main-content" class="main-content">
+                <!-- 书架页面 -->
+                <div id="bookshelf-screen" class="screen active">
+                    <div class="screen-header">
+                        <h1>My Bookshelf</h1>
+                    </div>
+                    <div id="bookshelf-content" class="content-area">
+                        <div class="loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading bookshelf...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 推荐页面 -->
+                <div id="recommendations-screen" class="screen">
+                    <div class="screen-header">
+                        <h1>Discover Books</h1>
+                    </div>
+                    <div id="recommendations-content" class="content-area">
+                        <div class="loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading recommendations...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分类页面 -->
+                <div id="categories-screen" class="screen">
+                    <div class="screen-header">
+                        <h1>Novel Categories</h1>
+                    </div>
+                    <div id="categories-content" class="content-area">
+                        <div class="loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading categories...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 个人中心页面 -->
+                <div id="profile-screen" class="screen">
+                    <div class="screen-header">
+                        <h1>Profile</h1>
+                    </div>
+                    <div id="profile-content" class="content-area">
+                        <div class="loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading profile...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 小说详情页面 -->
+                <div id="novel-detail-screen" class="screen">
+                    <div class="screen-header">
+                        <button id="back-to-main" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Back</span>
+                        </button>
+                        <h1 id="novel-detail-title">Novel Details</h1>
+                    </div>
+                    <div id="novel-detail-content" class="content-area">
+                        <!-- 小说详情内容将在这里动态加载 -->
+                    </div>
+                </div>
+
+                <!-- 阅读器页面 -->
+                <div id="reader-screen" class="screen">
+                    <div class="screen-header">
+                        <button id="back-to-detail" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Back</span>
+                        </button>
+                        <h1 id="reader-title">Reading</h1>
+                        <div class="reader-controls">
+                            <button id="prev-chapter" class="reader-btn">
+                                <i class="fas fa-chevron-left"></i>
+                                <span>Previous</span>
+                            </button>
+                            <button id="next-chapter" class="reader-btn">
+                                <span>Next</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="reader-content" class="content-area reader-content">
+                        <!-- 阅读内容将在这里动态加载 -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- 登录页面 -->
+        <div id="auth-screen" class="auth-screen">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <img src="./assets/app_logo_slogan.png" alt="Novica - Shaping Stories Smarter" class="auth-logo-slogan">
+                </div>
+                
+                <div class="auth-forms">
+                    <!-- Login form -->
+                    <div id="login-form" class="auth-form active">
+                        <form id="login-form-element">
+                            <div class="form-group">
+                                <label for="login-email">Email</label>
+                                <input type="email" id="login-email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" name="password" required>
+                            </div>
+                            <button type="submit" class="auth-btn">Login</button>
+                        </form>
+                        <p class="auth-switch">
+                            Don't have an account? <a href="#" id="show-register">Register now</a>
+                        </p>
+                    </div>
+
+                    <!-- Register form -->
+                    <div id="register-form" class="auth-form">
+                        <form id="register-form-element">
+                            <div class="form-group">
+                                <label for="register-email">Email</label>
+                                <input type="email" id="register-email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-password">Password</label>
+                                <input type="password" id="register-password" name="password" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label for="register-username">Username (Optional)</label>
+                                <input type="text" id="register-username" name="username">
+                            </div>
+                            <button type="submit" class="auth-btn">Register</button>
+                        </form>
+                        <p class="auth-switch">
+                            Already have an account? <a href="#" id="show-login">Login now</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Notice</h3>
+                <button id="modal-close" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- 模态框内容 -->
+            </div>
+            <div class="modal-footer">
+                <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.53.0/dist/umd/supabase.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/supabase.js"></script>
+    <script src="./js/auth.js"></script>
+    <script src="./js/navigation.js"></script>
+    <script src="./js/bookshelf.js"></script>
+    <script src="./js/recommendations.js"></script>
+    <script src="./js/categories.js"></script>
+    <script src="./js/profile.js"></script>
+    <script src="./js/novel-detail.js"></script>
+    <script src="./js/reader.js"></script>
+    <script src="./js/modal.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+</html>

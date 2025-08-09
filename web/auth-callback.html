@@ -123,7 +123,7 @@
             <div class="status-icon success">✅</div>
             <h1>Email Confirmed!</h1>
             <p>Your email has been successfully verified. You can now access all features of Novica.</p>
-            <a href="./index.html" class="btn">Continue to App</a>
+            <a href="./app.html" class="btn">Continue to App</a>
         </div>
         
         <!-- Error State -->
@@ -131,7 +131,7 @@
             <div class="status-icon error">❌</div>
             <h1>Confirmation Failed</h1>
             <p id="error-message">There was an issue confirming your email. The link may have expired or been used already.</p>
-            <a href="./index.html" class="btn">Back to App</a>
+            <a href="./app.html" class="btn">Back to App</a>
         </div>
     </div>
 
@@ -192,7 +192,7 @@
                 
                 // 3秒后自动跳转
                 setTimeout(() => {
-                    window.location.href = './index.html';
+                    window.location.href = './app.html';
                 }, 3000);
                 
             } catch (error) {
