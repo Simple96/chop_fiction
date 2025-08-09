@@ -41,12 +41,12 @@ export default function App() {
             <Stack.Screen 
               name="NovelDetail" 
               component={NovelDetailScreen}
-              options={{ headerShown: true, title: 'Novel Details' }}
+              options={{ headerShown: true, title: '小说详情' }}
             />
             <Stack.Screen 
               name="Reader" 
               component={ReaderScreen}
-              options={{ headerShown: true, title: 'Reader' }}
+              options={{ headerShown: true, title: '阅读' }}
             />
           </>
         ) : (
@@ -55,4 +55,4 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   )
-}
+} 

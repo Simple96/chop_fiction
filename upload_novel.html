@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说上传工具</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2C3E50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2C3E50;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #C0392B;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+        .btn {
+            background: #2C3E50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #34495E;
+        }
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .success {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 小说上传工具</h1>
+        
+        <form id="novelForm">
+            <div class="form-group">
+                <label for="title">📖 小说标题 *</label>
+                <input type="text" id="title" required placeholder="输入小说标题">
+            </div>
+            
+            <div class="form-group">
+                <label for="author">✍️ 作者 *</label>
+                <input type="text" id="author" required placeholder="输入作者名">
+            </div>
+            
+            <div class="form-group">
+                <label for="description">📝 简介 *</label>
+                <textarea id="description" required placeholder="输入小说简介..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">📂 类别 *</label>
+                <select id="category" required>
+                    <option value="">选择类别</option>
+                    <option value="Fantasy">Fantasy (玄幻)</option>
+                    <option value="Urban">Urban (都市)</option>
+                    <option value="Xianxia">Xianxia (仙侠)</option>
+                    <option value="Historical">Historical (历史)</option>
+                    <option value="Military">Military (军事)</option>
+                    <option value="Gaming">Gaming (游戏)</option>
+                    <option value="Sports">Sports (竞技)</option>
+                    <option value="Sci-Fi">Sci-Fi (科幻)</option>
+                    <option value="Supernatural">Supernatural (灵异)</option>
+                    <option value="Fanfiction">Fanfiction (同人)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="coverImage">🖼️ 封面图片URL</label>
+                <input type="url" id="coverImage" placeholder="https://example.com/cover.jpg">
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label for="totalChapters">📄 总章节数 *</label>
+                    <input type="number" id="totalChapters" required min="1" value="30">
+                </div>
+                
+                <div class="form-group">
+                    <label for="freeChapters">🆓 免费章节数 *</label>
+                    <input type="number" id="freeChapters" required min="1" value="8">
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">💰 价格 ($) *</label>
+                    <input type="number" id="price" required min="0" step="0.01" value="6.99">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">🚀 上传小说</button>
+        </form>
+        
+        <div id="successMsg" class="success"></div>
+        <div id="errorMsg" class="error"></div>
+    </div>
+
+    <script>
+        // Supabase 配置
+        const supabaseUrl = 'https://bbohqxwziavcqiwmcitw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJib2hxeHd6aWF2Y3Fpd21jaXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MDE3NDEsImV4cCI6MjA3MDA3Nzc0MX0.8MepqIP2eLmK6-TNw2JUGqobV_z0IIM9mZZi7kAvYOs';
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        document.getElementById('novelForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            // 隐藏之前的消息
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+            
+            // 禁用提交按钮
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ 上传中...';
+            
+            try {
+                // 收集表单数据
+                const formData = {
+                    title: document.getElementById('title').value.trim(),
+                    author: document.getElementById('author').value.trim(),
+                    description: document.getElementById('description').value.trim(),
+                    category: document.getElementById('category').value,
+                    cover_image: document.getElementById('coverImage').value.trim() || 'https://via.placeholder.com/300x400',
+                    total_chapters: parseInt(document.getElementById('totalChapters').value),
+                    free_chapters: parseInt(document.getElementById('freeChapters').value),
+                    price: parseFloat(document.getElementById('price').value),
+                    original_language: 'zh-CN',
+                    translated_language: 'en'
+                };
+                
+                // 插入数据库
+                const { data, error } = await supabase
+                    .from('novels')
+                    .insert([formData])
+                    .select();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // 成功
+                successMsg.innerHTML = `🎉 成功上传小说: <strong>${formData.title}</strong><br>📍 小说ID: ${data[0].id}`;
+                successMsg.style.display = 'block';
+                
+                // 重置表单
+                document.getElementById('novelForm').reset();
+                document.getElementById('totalChapters').value = '30';
+                document.getElementById('freeChapters').value = '8';
+                document.getElementById('price').value = '6.99';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                errorMsg.innerHTML = `❌ 上传失败: ${error.message}`;
+                errorMsg.style.display = 'block';
+            } finally {
+                // 恢复提交按钮
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 上传小说';
+            }
+        });
+        
+        // 验证免费章节数不能超过总章节数
+        document.getElementById('freeChapters').addEventListener('input', (e) => {
+            const totalChapters = parseInt(document.getElementById('totalChapters').value) || 0;
+            const freeChapters = parseInt(e.target.value) || 0;
+            
+            if (freeChapters > totalChapters) {
+                e.target.value = totalChapters;
+            }
+        });
+        
+        document.getElementById('totalChapters').addEventListener('input', (e) => {
+            const totalChapters = parseInt(e.target.value) || 0;
+            const freeChaptersInput = document.getElementById('freeChapters');
+            const freeChapters = parseInt(freeChaptersInput.value) || 0;
+            
+            if (freeChapters > totalChapters) {
+                freeChaptersInput.value = totalChapters;
+            }
+        });
+    </script>
+</body>
+</html>
