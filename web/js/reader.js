@@ -114,8 +114,9 @@ class ReaderManager {
             if (result.success && result.data) {
                 this.currentChapter = result.data;
             } else {
-                // 使用模拟数据
-                this.currentChapter = this.generateMockChapter(novel, chapterNumber);
+                // 没有数据时显示错误
+                Utils.showError(container, 'Chapter not found or network connection failed');
+                return;
             }
             
             // 加载章节列表（用于导航）
@@ -140,35 +141,7 @@ class ReaderManager {
         }
     }
     
-    // 生成模拟章节数据
-    generateMockChapter(novel, chapterNumber) {
-        const chapterTitles = [
-            'Enter the World', 'Meet the Master', 'Path of Cultivation', 'Crisis Looms', 'Breaking Through',
-            'Powerful Enemy', 'Life or Death', 'Light in Darkness', 'Power Surge', 'Famous Across Lands',
-            'Love and Hate', 'Blood Feud', 'Path of Revenge', 'Final Battle', 'Retirement in Glory'
-        ];
-        
-        const title = chapterTitles[chapterNumber % chapterTitles.length] || `Chapter ${chapterNumber}`;
-        
-        const content = `
-            <p>This is the content of Chapter ${chapterNumber} from "${novel.title}".</p>
-            <p>In this chapter, the protagonist faces new challenges and opportunities. After intense struggles, they finally achieve an important breakthrough.</p>
-            <p>The story plot is thrilling and exciting, with vivid character development that keeps readers engaged.</p>
-            <p>As the plot develops further, more mysteries will be revealed, and greater adventures await the protagonist.</p>
-            <p>This is an AI-condensed version that retains the exciting content of the original while significantly shortening the length, allowing readers to quickly understand the core plot.</p>
-            <p>The upcoming chapters will be even more exciting, stay tuned!</p>
-        `;
-        
-        return {
-            id: `${novel.id}-chapter-${chapterNumber}`,
-            novel_id: novel.id,
-            chapter_number: chapterNumber,
-            title: title,
-            content: content,
-            is_free: chapterNumber <= (novel.free_chapters || Math.floor(novel.total_chapters * 0.25)),
-            created_at: new Date().toISOString()
-        };
-    }
+
     
     // 加载章节列表
     async loadChaptersList(novel) {
@@ -177,14 +150,9 @@ class ReaderManager {
             if (result.success) {
                 this.chapters = result.data || [];
             } else {
-                // 生成模拟章节列表
+                // 网络连接问题或没有章节数据
                 this.chapters = [];
-                for (let i = 1; i <= novel.total_chapters; i++) {
-                    this.chapters.push({
-                        chapter_number: i,
-                        is_free: i <= (novel.free_chapters || Math.floor(novel.total_chapters * 0.25))
-                    });
-                }
+                console.error('Failed to load chapters list');
             }
         } catch (error) {
             console.error('Load chapters list error:', error);

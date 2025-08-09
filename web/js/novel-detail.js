@@ -49,8 +49,9 @@ class NovelDetailManager {
             if (chaptersResult.success) {
                 this.chapters = chaptersResult.data || [];
             } else {
-                // 生成模拟章节数据
-                this.chapters = this.generateMockChapters(novel);
+                // 网络连接问题或没有章节数据
+                this.chapters = [];
+                console.error('Failed to load chapters');
             }
             
             if (purchaseResult.success) {
@@ -68,26 +69,7 @@ class NovelDetailManager {
         }
     }
     
-    // 生成模拟章节数据
-    generateMockChapters(novel) {
-        const chapters = [];
-        const totalChapters = novel.total_chapters || 30;
-        const freeChapters = novel.free_chapters || Math.floor(totalChapters * 0.25);
-        
-        for (let i = 1; i <= totalChapters; i++) {
-            chapters.push({
-                id: `${novel.id}-chapter-${i}`,
-                novel_id: novel.id,
-                chapter_number: i,
-                title: `Chapter ${i}`,
-                content: `This is the content of chapter ${i}...`,
-                is_free: i <= freeChapters,
-                created_at: new Date().toISOString()
-            });
-        }
-        
-        return chapters;
-    }
+
     
     // 渲染小说详情
     renderNovelDetail(container) {

@@ -45,8 +45,18 @@ class CategoriesManager {
             // 渲染分类选择器到header中，书籍列表到content中
             this.renderCategorySelector();
             this.renderBooksContainer(container);
-            // 加载当前分类的小说
-            await this.loadCategoryNovels(this.currentCategory, true);
+            
+            // 如果当前分类已有数据，直接渲染，否则加载新数据
+            if (this.currentNovels.length > 0) {
+                // 直接渲染已有数据
+                const booksContainer = document.getElementById('category-books-container');
+                if (booksContainer) {
+                    this.renderCategoryNovels(booksContainer, true);
+                }
+            } else {
+                // 加载当前分类的小说
+                await this.loadCategoryNovels(this.currentCategory, true);
+            }
         } catch (error) {
             console.error('Load categories error:', error);
             Utils.showError(container, 'Failed to load categories, please try again later');
@@ -250,7 +260,7 @@ class CategoriesManager {
         
         // 添加点击事件
         card.addEventListener('click', () => {
-            window.navigationManager.navigateToNovelDetail(novel.id);
+            window.navigationManager.navigateToNovelDetail(novel, false);
         });
         
         return card;

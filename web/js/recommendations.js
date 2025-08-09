@@ -77,115 +77,16 @@ class RecommendationsManager {
         } catch (error) {
             console.error('Load recommendations error:', error);
             
-            // 如果是第一次加载失败，显示模拟数据
-            if (reset && this.novels.length === 0) {
-                this.loadMockData();
-                this.renderRecommendations(container, true);
-                Utils.showNotification('Using demo data', 'info');
-            } else {
-                Utils.showError(container, 'Failed to load recommendations, please try again later');
-            }
+            // 网络连接问题时显示错误
+            Utils.showError(container, 'Network connection failed. Please check your internet connection and try again.');
+            this.novels = [];
+            this.hasMore = false;
         } finally {
             this.loading = false;
         }
     }
     
-    // 加载模拟数据
-    loadMockData() {
-        this.novels = [
-            {
-                id: '1',
-                title: '斗破苍穹（缩写版）',
-                author: '天蚕土豆',
-                description: '少年萧炎在家族中被视为废物，但在获得神秘戒指后开始崛起。这是原版小说的AI缩写版本，保留了精彩剧情的同时大大缩短了篇幅。',
-                cover_image: 'https://via.placeholder.com/100x150?text=斗破苍穹',
-                category: '玄幻',
-                original_language: 'zh-CN',
-                translated_language: 'en',
-                total_chapters: 50,
-                free_chapters: 12,
-                price: 9.99,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            },
-            {
-                id: '2',
-                title: '完美世界（缩写版）',
-                author: '辰东',
-                description: '一个少年从大荒中走出，踏上修炼之路。AI精心缩写，将数百万字的内容压缩为精华版本。',
-                cover_image: 'https://via.placeholder.com/100x150?text=完美世界',
-                category: '玄幻',
-                original_language: 'zh-CN',
-                translated_language: 'en',
-                total_chapters: 45,
-                free_chapters: 11,
-                price: 8.99,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            },
-            {
-                id: '3',
-                title: '凡人修仙传（缩写版）',
-                author: '忘语',
-                description: '一个普通的山村穷小子，偶然之下，跨入到一个江湖小门派。AI智能缩写，让你快速体验修仙之路。',
-                cover_image: 'https://via.placeholder.com/100x150?text=凡人修仙传',
-                category: '仙侠',
-                original_language: 'zh-CN',
-                translated_language: 'en',
-                total_chapters: 40,
-                free_chapters: 10,
-                price: 7.99,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            },
-            {
-                id: '4',
-                title: '遮天（缩写版）',
-                author: '辰东',
-                description: '冰冷与黑暗并存的宇宙深处，九具庞大的龙尸拉着一口青铜古棺，亘古长存。AI缩写经典，精彩不减。',
-                cover_image: 'https://via.placeholder.com/100x150?text=遮天',
-                category: '玄幻',
-                original_language: 'zh-CN',
-                translated_language: 'en',
-                total_chapters: 55,
-                free_chapters: 14,
-                price: 10.99,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            },
-            {
-                id: '5',
-                title: '诛仙（缩写版）',
-                author: '萧鼎',
-                description: '草庙村少年张小凡，经历家门血案后被青云门收为弟子。AI重新演绎经典仙侠故事。',
-                cover_image: 'https://via.placeholder.com/100x150?text=诛仙',
-                category: '仙侠',
-                original_language: 'zh-CN',
-                translated_language: 'en',
-                total_chapters: 35,
-                free_chapters: 9,
-                price: 6.99,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            },
-            {
-                id: '6',
-                title: '全职高手（缩写版）',
-                author: '蝴蝶蓝',
-                description: '网游荣耀中被誉为教科书级别的顶尖高手叶修，因为种种原因遭到俱乐部的驱逐。AI缩写电竞经典。',
-                cover_image: 'https://via.placeholder.com/100x150?text=全职高手',
-                category: '游戏',
-                original_language: 'zh-CN',
-                translated_language: 'en',
-                total_chapters: 42,
-                free_chapters: 11,
-                price: 8.99,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            }
-        ];
-        this.hasMore = false;
-    }
+
     
     // 渲染推荐
     renderRecommendations(container, reset = true) {
