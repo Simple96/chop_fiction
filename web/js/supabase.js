@@ -65,13 +65,18 @@ class SupabaseClient {
     // 用户注册
     async signUp(email, password, username = null) {
         try {
+            // 获取当前域名作为回调URL基础
+            const baseUrl = window.location.origin;
+            const redirectUrl = `${baseUrl}/auth-callback.html`;
+            
             const { data, error } = await this.client.auth.signUp({
                 email,
                 password,
                 options: {
                     data: {
                         username: username
-                    }
+                    },
+                    emailRedirectTo: redirectUrl
                 }
             });
             

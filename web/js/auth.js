@@ -285,8 +285,8 @@ class AuthManager {
     // 显示邮箱验证消息
     showEmailVerificationMessage(email) {
         window.navigationManager.showInfoDialog(
-            '验证邮箱',
-            `我们已向 ${email} 发送了验证邮件，请点击邮件中的链接完成注册。如果没有收到邮件，请检查垃圾邮件文件夹。`,
+            'Verify Email',
+            `We've sent a verification email to ${email}. Please click the link in the email to complete your registration. If you don't see the email, please check your spam folder.`,
             () => {
                 this.showLoginForm();
             }
