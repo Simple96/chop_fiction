@@ -97,15 +97,15 @@ class ReaderManager {
         this.loading = true;
         
         // 更新页面标题
-        window.navigationManager.setPageTitle(`第${chapterNumber}章 - ${novel.title}`);
+        window.navigationManager.setPageTitle(`Chapter ${chapterNumber} - ${novel.title}`);
         
         // 更新阅读器标题
         const readerTitle = document.getElementById('reader-title');
         if (readerTitle) {
-            readerTitle.textContent = `${novel.title} - 第${chapterNumber}章`;
+            readerTitle.textContent = `${novel.title} - Chapter ${chapterNumber}`;
         }
         
-        Utils.showLoading(container, '加载章节中...');
+        Utils.showLoading(container, 'Loading chapter...');
         
         try {
             // 尝试从服务器加载章节
@@ -134,7 +134,7 @@ class ReaderManager {
             
         } catch (error) {
             console.error('Load chapter error:', error);
-            Utils.showError(container, '加载章节失败，请稍后重试');
+            Utils.showError(container, 'Failed to load chapter, please try again later');
         } finally {
             this.loading = false;
         }
@@ -143,20 +143,20 @@ class ReaderManager {
     // 生成模拟章节数据
     generateMockChapter(novel, chapterNumber) {
         const chapterTitles = [
-            '初入江湖', '奇遇良师', '修炼之路', '危机四伏', '突破瓶颈',
-            '强敌来袭', '生死关头', '柳暗花明', '实力大增', '名动天下',
-            '爱恨情仇', '血海深仇', '复仇之路', '最终决战', '功成身退'
+            'Enter the World', 'Meet the Master', 'Path of Cultivation', 'Crisis Looms', 'Breaking Through',
+            'Powerful Enemy', 'Life or Death', 'Light in Darkness', 'Power Surge', 'Famous Across Lands',
+            'Love and Hate', 'Blood Feud', 'Path of Revenge', 'Final Battle', 'Retirement in Glory'
         ];
         
-        const title = chapterTitles[chapterNumber % chapterTitles.length] || `第${chapterNumber}章`;
+        const title = chapterTitles[chapterNumber % chapterTitles.length] || `Chapter ${chapterNumber}`;
         
         const content = `
-            <p>这是《${novel.title}》第${chapterNumber}章的内容。</p>
-            <p>在这一章中，主人公面临了新的挑战和机遇。经过一番激烈的斗争，最终获得了重要的突破。</p>
-            <p>故事情节紧张刺激，人物刻画生动形象，让读者欲罢不能。</p>
-            <p>随着剧情的深入发展，更多的谜团即将揭开，更大的冒险正在等待着主人公。</p>
-            <p>这是AI缩写版本，保留了原作的精彩内容，同时大大缩短了篇幅，让读者能够快速了解故事的核心情节。</p>
-            <p>接下来的章节将会更加精彩，敬请期待！</p>
+            <p>This is the content of Chapter ${chapterNumber} from "${novel.title}".</p>
+            <p>In this chapter, the protagonist faces new challenges and opportunities. After intense struggles, they finally achieve an important breakthrough.</p>
+            <p>The story plot is thrilling and exciting, with vivid character development that keeps readers engaged.</p>
+            <p>As the plot develops further, more mysteries will be revealed, and greater adventures await the protagonist.</p>
+            <p>This is an AI-condensed version that retains the exciting content of the original while significantly shortening the length, allowing readers to quickly understand the core plot.</p>
+            <p>The upcoming chapters will be even more exciting, stay tuned!</p>
         `;
         
         return {
@@ -195,7 +195,7 @@ class ReaderManager {
     // 渲染章节
     renderChapter(container) {
         if (!this.currentChapter) {
-            Utils.showError(container, '章节内容不存在');
+            Utils.showError(container, 'Chapter content does not exist');
             return;
         }
         
@@ -212,18 +212,18 @@ class ReaderManager {
                     ${this.chapterNumber > 1 ? 
                         `<button class="btn btn-outline prev-chapter-bottom">
                             <i class="fas fa-chevron-left"></i>
-                            <span>上一章</span>
+                            <span>Previous</span>
                         </button>` : ''
                     }
                     ${this.chapterNumber < this.currentNovel.total_chapters ? 
                         `<button class="btn btn-outline next-chapter-bottom">
-                            <span>下一章</span>
+                            <span>Next</span>
                             <i class="fas fa-chevron-right"></i>
                         </button>` : ''
                     }
                 </div>
                 <div class="chapter-progress">
-                    <span>第 ${this.chapterNumber} 章 / 共 ${this.currentNovel.total_chapters} 章</span>
+                    <span>Chapter ${this.chapterNumber} / ${this.currentNovel.total_chapters} Total</span>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${(this.chapterNumber / this.currentNovel.total_chapters) * 100}%"></div>
                     </div>
@@ -282,7 +282,7 @@ class ReaderManager {
     
     // 格式化章节内容
     formatChapterContent(content) {
-        if (!content) return '<p>章节内容为空</p>';
+        if (!content) return '<p>Chapter content is empty</p>';
         
         // 如果内容已经是HTML格式，直接返回
         if (content.includes('<p>') || content.includes('<div>')) {
@@ -332,7 +332,7 @@ class ReaderManager {
     // 上一章
     async previousChapter() {
         if (this.chapterNumber <= 1) {
-            Utils.showNotification('已经是第一章了', 'info');
+            Utils.showNotification('Already at the first chapter', 'info');
             return;
         }
         
@@ -343,7 +343,7 @@ class ReaderManager {
     // 下一章
     async nextChapter() {
         if (this.chapterNumber >= this.currentNovel.total_chapters) {
-            Utils.showNotification('已经是最后一章了', 'info');
+            Utils.showNotification('Already at the last chapter', 'info');
             return;
         }
         
@@ -355,7 +355,7 @@ class ReaderManager {
             // 检查是否已购买
             const purchaseResult = await window.supabaseClient.checkPurchase(this.currentNovel.id);
             if (!purchaseResult.success || !purchaseResult.purchased) {
-                Utils.showNotification('下一章需要购买后才能阅读', 'warning');
+                Utils.showNotification('Next chapter requires purchase to read', 'warning');
                 return;
             }
         }
@@ -366,7 +366,7 @@ class ReaderManager {
     // 跳转到指定章节
     async goToChapter(chapterNumber) {
         if (chapterNumber < 1 || chapterNumber > this.currentNovel.total_chapters) {
-            Utils.showNotification('章节号无效', 'error');
+            Utils.showNotification('Invalid chapter number', 'error');
             return;
         }
         
@@ -376,7 +376,7 @@ class ReaderManager {
         if (chapter && !chapter.is_free) {
             const purchaseResult = await window.supabaseClient.checkPurchase(this.currentNovel.id);
             if (!purchaseResult.success || !purchaseResult.purchased) {
-                Utils.showNotification('该章节需要购买后才能阅读', 'warning');
+                Utils.showNotification('This chapter requires purchase to read', 'warning');
                 return;
             }
         }
@@ -482,7 +482,7 @@ class ReaderManager {
     // 显示章节目录（可选功能）
     showChapterList() {
         if (this.chapters.length === 0) {
-            Utils.showNotification('章节列表为空', 'info');
+            Utils.showNotification('Chapter list is empty', 'info');
             return;
         }
         
@@ -492,12 +492,12 @@ class ReaderManager {
         const confirmBtn = document.getElementById('modal-confirm');
         const cancelBtn = document.getElementById('modal-cancel');
         
-        modalTitle.textContent = '章节目录';
+        modalTitle.textContent = 'Chapter List';
         
         const chaptersList = this.chapters.map(chapter => {
             const isLocked = !chapter.is_free;
             const isCurrent = chapter.chapter_number === this.chapterNumber;
-            const statusText = chapter.is_free ? '免费' : '付费';
+            const statusText = chapter.is_free ? 'Free' : 'Paid';
             
             return `
                 <div class="chapter-list-item ${isLocked ? 'locked' : ''} ${isCurrent ? 'current' : ''}" 
@@ -513,7 +513,7 @@ class ReaderManager {
                         ${isCurrent ? 'background-color: #fff5f5; border-left: 3px solid #C0392B;' : ''}
                         ${isLocked ? 'opacity: 0.6;' : ''}
                      ">
-                    <span>第${chapter.chapter_number}章</span>
+                    <span>Chapter ${chapter.chapter_number}</span>
                     <span style="font-size: 12px; color: ${chapter.is_free ? '#28a745' : '#ffc107'};">
                         ${statusText}
                     </span>
@@ -529,7 +529,7 @@ class ReaderManager {
         
         // 隐藏确认和取消按钮
         confirmBtn.style.display = 'none';
-        cancelBtn.textContent = '关闭';
+        cancelBtn.textContent = 'Close';
         
         // 绑定章节点击事件
         modalBody.querySelectorAll('.chapter-list-item:not(.locked)').forEach(item => {
@@ -546,7 +546,7 @@ class ReaderManager {
         newCancelBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
             confirmBtn.style.display = 'inline-block';
-            cancelBtn.textContent = '取消';
+            cancelBtn.textContent = 'Cancel';
         });
         
         // 显示模态框

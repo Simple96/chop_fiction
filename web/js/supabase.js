@@ -42,7 +42,7 @@ class SupabaseClient {
             console.log('Supabase client initialized successfully');
         } catch (error) {
             console.error('Failed to initialize Supabase client:', error);
-            Utils.showNotification('初始化失败，请刷新页面重试', 'error');
+            Utils.showNotification('Initialization failed, please refresh the page and try again', 'error');
         }
     }
     
@@ -77,7 +77,7 @@ class SupabaseClient {
             
             if (error) throw error;
             
-            Utils.showNotification('注册成功！请检查邮箱验证链接', 'success');
+            Utils.showNotification('Registration successful! Please check your email for verification link', 'success');
             return { success: true, data };
         } catch (error) {
             console.error('Sign up error:', error);
@@ -96,7 +96,7 @@ class SupabaseClient {
             
             if (error) throw error;
             
-            Utils.showNotification('登录成功！', 'success');
+            Utils.showNotification('Login successful!', 'success');
             return { success: true, data };
         } catch (error) {
             console.error('Sign in error:', error);
@@ -111,11 +111,11 @@ class SupabaseClient {
             const { error } = await this.client.auth.signOut();
             if (error) throw error;
             
-            Utils.showNotification('已退出登录', 'info');
+            Utils.showNotification('Logged out successfully', 'info');
             return { success: true };
         } catch (error) {
             console.error('Sign out error:', error);
-            Utils.showNotification('退出登录失败', 'error');
+            Utils.showNotification('Logout failed', 'error');
             return { success: false, error };
         }
     }
@@ -154,11 +154,11 @@ class SupabaseClient {
                 
             if (error) throw error;
             
-            Utils.showNotification('资料更新成功', 'success');
+            Utils.showNotification('Profile updated successfully', 'success');
             return { success: true, data };
         } catch (error) {
             console.error('Update profile error:', error);
-            Utils.showNotification('资料更新失败', 'error');
+            Utils.showNotification('Profile update failed', 'error');
             return { success: false, error };
         }
     }
@@ -293,14 +293,14 @@ class SupabaseClient {
                 
             if (error) throw error;
             
-            Utils.showNotification('已添加到书架', 'success');
+            Utils.showNotification('Added to bookshelf', 'success');
             return { success: true, data };
         } catch (error) {
             console.error('Add to bookshelf error:', error);
             if (error.code === '23505') {
-                Utils.showNotification('该小说已在书架中', 'warning');
+                Utils.showNotification('This novel is already in your bookshelf', 'warning');
             } else {
-                Utils.showNotification('添加到书架失败', 'error');
+                Utils.showNotification('Failed to add to bookshelf', 'error');
             }
             return { success: false, error };
         }
@@ -319,11 +319,11 @@ class SupabaseClient {
                 
             if (error) throw error;
             
-            Utils.showNotification('已从书架移除', 'success');
+            Utils.showNotification('Removed from bookshelf', 'success');
             return { success: true };
         } catch (error) {
             console.error('Remove from bookshelf error:', error);
-            Utils.showNotification('从书架移除失败', 'error');
+            Utils.showNotification('Failed to remove from bookshelf', 'error');
             return { success: false, error };
         }
     }
@@ -386,14 +386,14 @@ class SupabaseClient {
                 
             if (error) throw error;
             
-            Utils.showNotification('购买成功！', 'success');
+            Utils.showNotification('Purchase successful!', 'success');
             return { success: true, data };
         } catch (error) {
             console.error('Purchase novel error:', error);
             if (error.code === '23505') {
-                Utils.showNotification('您已购买过这本小说', 'warning');
+                Utils.showNotification('You have already purchased this novel', 'warning');
             } else {
-                Utils.showNotification('购买失败，请稍后重试', 'error');
+                Utils.showNotification('Purchase failed, please try again later', 'error');
             }
             return { success: false, error };
         }
@@ -435,18 +435,18 @@ class SupabaseClient {
     // 获取错误消息
     getErrorMessage(error) {
         const errorMessages = {
-            'Invalid login credentials': '邮箱或密码错误',
-            'Email not confirmed': '请先验证邮箱',
-            'User not found': '用户不存在',
-            'Invalid email': '邮箱格式不正确',
-            'Password should be at least 6 characters': '密码至少需要6个字符',
-            'User already registered': '用户已存在',
-            'Email already registered': '邮箱已被注册',
-            'Network request failed': '网络连接失败，请检查网络',
-            'Timeout': '请求超时，请重试'
+            'Invalid login credentials': 'Incorrect email or password',
+            'Email not confirmed': 'Please verify your email first',
+            'User not found': 'User does not exist',
+            'Invalid email': 'Invalid email format',
+            'Password should be at least 6 characters': 'Password must be at least 6 characters',
+            'User already registered': 'User already exists',
+            'Email already registered': 'Email is already registered',
+            'Network request failed': 'Network connection failed, please check your connection',
+            'Timeout': 'Request timeout, please try again'
         };
         
-        return errorMessages[error.message] || error.message || '操作失败，请稍后重试';
+        return errorMessages[error.message] || error.message || 'Operation failed, please try again later';
     }
 }
 

@@ -37,7 +37,7 @@ class NovelDetailManager {
         // 更新页面标题
         window.navigationManager.setPageTitle(novel.title);
         
-        Utils.showLoading(container, '加载小说详情中...');
+        Utils.showLoading(container, 'Loading novel details...');
         
         try {
             // 并行加载章节列表和购买状态
@@ -62,7 +62,7 @@ class NovelDetailManager {
             this.renderNovelDetail(container);
         } catch (error) {
             console.error('Load novel detail error:', error);
-            Utils.showError(container, '加载小说详情失败，请稍后重试');
+            Utils.showError(container, 'Failed to load novel details, please try again later');
         } finally {
             this.loading = false;
         }
@@ -79,8 +79,8 @@ class NovelDetailManager {
                 id: `${novel.id}-chapter-${i}`,
                 novel_id: novel.id,
                 chapter_number: i,
-                title: `第${i}章`,
-                content: `这是第${i}章的内容...`,
+                title: `Chapter ${i}`,
+                content: `This is the content of chapter ${i}...`,
                 is_free: i <= freeChapters,
                 created_at: new Date().toISOString()
             });
@@ -115,31 +115,31 @@ class NovelDetailManager {
         
         return `
             <div class="novel-hero">
-                <img src="${novel.cover_image || 'https://via.placeholder.com/200x300?text=暂无封面'}" 
+                <img src="${novel.cover_image || 'https://via.placeholder.com/200x300?text=No+Cover'}" 
                      alt="${novel.title}" 
                      class="novel-cover-large"
                      onerror="Utils.handleImageError(this)">
                 <div class="novel-info-large">
                     <h1 class="novel-title-large">${novel.title}</h1>
-                    <p class="novel-author-large">作者：${novel.author}</p>
+                    <p class="novel-author-large">Author: ${novel.author}</p>
                     <p class="novel-description-large">${novel.description}</p>
                     
                     <div class="novel-stats">
                         <div class="novel-stat">
                             <div class="novel-stat-value">${novel.total_chapters}</div>
-                            <div class="novel-stat-label">总章节</div>
+                            <div class="novel-stat-label">Total Chapters</div>
                         </div>
                         <div class="novel-stat">
                             <div class="novel-stat-value">${freePercentage}%</div>
-                            <div class="novel-stat-label">免费比例</div>
+                            <div class="novel-stat-label">Free Ratio</div>
                         </div>
                         <div class="novel-stat">
                             <div class="novel-stat-value">${Utils.getCategoryDisplayName(novel.category)}</div>
-                            <div class="novel-stat-label">分类</div>
+                            <div class="novel-stat-label">Category</div>
                         </div>
                         <div class="novel-stat">
                             <div class="novel-stat-value">${Utils.formatPrice(novel.price)}</div>
-                            <div class="novel-stat-label">价格</div>
+                            <div class="novel-stat-label">Price</div>
                         </div>
                     </div>
                     
@@ -158,7 +158,7 @@ class NovelDetailManager {
         // 开始阅读按钮
         if (this.chapters.length > 0) {
             const lastReadChapter = this.getLastReadChapter();
-            const buttonText = lastReadChapter > 0 ? `继续阅读（第${lastReadChapter}章）` : '开始阅读';
+            const buttonText = lastReadChapter > 0 ? `Continue Reading (Chapter ${lastReadChapter})` : 'Start Reading';
             const chapterToRead = lastReadChapter > 0 ? lastReadChapter : 1;
             
             buttons.push(`
@@ -175,14 +175,14 @@ class NovelDetailManager {
                 buttons.push(`
                     <button class="btn btn-secondary remove-from-bookshelf-btn">
                         <i class="fas fa-bookmark"></i>
-                        <span>从书架移除</span>
+                        <span>Remove from Bookshelf</span>
                     </button>
                 `);
             } else {
                 buttons.push(`
                     <button class="btn btn-outline add-to-bookshelf-btn">
                         <i class="fas fa-bookmark"></i>
-                        <span>添加到书架</span>
+                        <span>Add to Bookshelf</span>
                     </button>
                 `);
             }
@@ -193,14 +193,14 @@ class NovelDetailManager {
             buttons.push(`
                 <button class="btn btn-primary purchase-btn">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>购买小说 ${Utils.formatPrice(this.currentNovel.price)}</span>
+                    <span>Purchase Novel ${Utils.formatPrice(this.currentNovel.price)}</span>
                 </button>
             `);
         } else if (this.isPurchased) {
             buttons.push(`
                 <button class="btn btn-success" disabled>
                     <i class="fas fa-check"></i>
-                    <span>已购买</span>
+                    <span>Purchased</span>
                 </button>
             `);
         }
@@ -213,11 +213,11 @@ class NovelDetailManager {
         if (this.chapters.length === 0) {
             return `
                 <div class="chapters-section">
-                    <h3>章节列表</h3>
+                    <h3>Chapter List</h3>
                     <div class="empty-state">
                         <i class="fas fa-book-open"></i>
-                        <h3>暂无章节</h3>
-                        <p>该小说暂时没有可用章节</p>
+                        <h3>No Chapters</h3>
+                        <p>This novel has no available chapters yet</p>
                     </div>
                 </div>
             `;
@@ -226,7 +226,7 @@ class NovelDetailManager {
         const chaptersList = this.chapters.map(chapter => {
             const isLocked = !chapter.is_free && !this.isPurchased;
             const statusClass = chapter.is_free ? 'free' : (this.isPurchased ? 'paid' : 'locked');
-            const statusText = chapter.is_free ? '免费' : (this.isPurchased ? '已购' : '付费');
+            const statusText = chapter.is_free ? 'Free' : (this.isPurchased ? 'Owned' : 'Paid');
             
             return `
                 <div class="chapter-item ${isLocked ? 'locked' : ''}" data-chapter="${chapter.chapter_number}">
@@ -238,7 +238,7 @@ class NovelDetailManager {
         
         return `
             <div class="chapters-section">
-                <h3>章节列表（共 ${this.chapters.length} 章）</h3>
+                <h3>Chapter List (${this.chapters.length} chapters total)</h3>
                 <div class="chapters-list">
                     ${chaptersList}
                 </div>
@@ -294,7 +294,7 @@ class NovelDetailManager {
         const lockedChapters = container.querySelectorAll('.chapter-item.locked');
         lockedChapters.forEach(item => {
             item.addEventListener('click', () => {
-                Utils.showNotification('请先购买小说以解锁所有章节', 'warning');
+                Utils.showNotification('Please purchase the novel to unlock all chapters', 'warning');
             });
         });
     }
@@ -305,13 +305,13 @@ class NovelDetailManager {
         
         const chapter = this.chapters.find(c => c.chapter_number === chapterNumber);
         if (!chapter) {
-            Utils.showNotification('章节不存在', 'error');
+            Utils.showNotification('Chapter does not exist', 'error');
             return;
         }
         
         // 检查章节是否可以阅读
         if (!chapter.is_free && !this.isPurchased) {
-            Utils.showNotification('该章节需要购买后才能阅读', 'warning');
+            Utils.showNotification('This chapter requires purchase to read', 'warning');
             return;
         }
         
@@ -321,7 +321,7 @@ class NovelDetailManager {
     // 添加到书架
     async addToBookshelf() {
         if (!window.authManager.isAuthenticated()) {
-            Utils.showNotification('请先登录', 'warning');
+            Utils.showNotification('Please login first', 'warning');
             return;
         }
         
@@ -336,8 +336,8 @@ class NovelDetailManager {
     // 从书架移除
     async removeFromBookshelf() {
         window.navigationManager.showConfirmDialog(
-            '移除确认',
-            '确定要从书架中移除这本小说吗？',
+            'Remove Confirmation',
+            'Are you sure you want to remove this novel from your bookshelf?',
             async () => {
                 const success = await window.bookshelfManager.removeFromBookshelf(this.currentNovel.id);
                 if (success) {
@@ -352,13 +352,13 @@ class NovelDetailManager {
     // 购买小说
     async purchaseNovel() {
         if (!window.authManager.isAuthenticated()) {
-            Utils.showNotification('请先登录', 'warning');
+            Utils.showNotification('Please login first', 'warning');
             return;
         }
         
         window.navigationManager.showConfirmDialog(
-            '购买确认',
-            `确定要购买《${this.currentNovel.title}》吗？\n价格：${Utils.formatPrice(this.currentNovel.price)}`,
+            'Purchase Confirmation',
+            `Are you sure you want to purchase "${this.currentNovel.title}"?\nPrice: ${Utils.formatPrice(this.currentNovel.price)}`,
             async () => {
                 const result = await window.supabaseClient.purchaseNovel(this.currentNovel.id);
                 if (result.success) {
@@ -439,7 +439,7 @@ class NovelDetailManager {
         
         const shareData = {
             title: this.currentNovel.title,
-            text: `推荐一本好书：《${this.currentNovel.title}》- ${this.currentNovel.author}`,
+            text: `Recommend a great book: "${this.currentNovel.title}" by ${this.currentNovel.author}`,
             url: window.location.href
         };
         
@@ -451,7 +451,7 @@ class NovelDetailManager {
             
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(textToCopy).then(() => {
-                    Utils.showNotification('分享链接已复制到剪贴板', 'success');
+                    Utils.showNotification('Share link copied to clipboard', 'success');
                 }).catch(() => {
                     this.fallbackCopyToClipboard(textToCopy);
                 });
@@ -474,10 +474,10 @@ class NovelDetailManager {
         
         try {
             document.execCommand('copy');
-            Utils.showNotification('分享链接已复制到剪贴板', 'success');
+            Utils.showNotification('Share link copied to clipboard', 'success');
         } catch (err) {
             console.error('Copy to clipboard failed:', err);
-            Utils.showNotification('复制失败，请手动复制链接', 'error');
+            Utils.showNotification('Copy failed, please copy the link manually', 'error');
         }
         
         document.body.removeChild(textArea);

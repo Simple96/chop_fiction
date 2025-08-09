@@ -150,7 +150,7 @@ class NavigationManager {
         const prevChapter = chapterNumber - 1;
         
         if (prevChapter < 1) {
-            Utils.showNotification('已经是第一章了', 'info');
+            Utils.showNotification('Already at the first chapter', 'info');
             return;
         }
         
@@ -165,7 +165,7 @@ class NavigationManager {
         const nextChapter = chapterNumber + 1;
         
         if (nextChapter > novel.total_chapters) {
-            Utils.showNotification('已经是最后一章了', 'info');
+            Utils.showNotification('Already at the last chapter', 'info');
             return;
         }
         
@@ -314,7 +314,7 @@ class NavigationManager {
         
         // 隐藏取消按钮
         cancelBtn.style.display = 'none';
-        confirmBtn.textContent = '确定';
+        confirmBtn.textContent = 'OK';
         
         // 清除之前的事件监听器
         const newConfirmBtn = confirmBtn.cloneNode(true);
@@ -324,7 +324,7 @@ class NavigationManager {
         newConfirmBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
             cancelBtn.style.display = 'inline-block';
-            confirmBtn.textContent = '确认';
+            confirmBtn.textContent = 'Confirm';
             if (onClose) onClose();
         });
         

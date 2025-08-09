@@ -456,6 +456,72 @@ body {
     opacity: 0.9;
 }
 
+/* Categories页面header中的分类选择器样式 */
+.category-selector-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    flex: 1;
+}
+
+.category-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.category-tabs::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.category-tabs::-webkit-scrollbar-thumb {
+    background: #C0392B;
+    border-radius: 2px;
+}
+
+.category-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 20px;
+    background-color: #fff;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.category-tab:hover {
+    border-color: #C0392B;
+    color: #C0392B;
+}
+
+.category-tab.active {
+    background-color: #C0392B;
+    border-color: #C0392B;
+    color: white;
+    box-shadow: 0 2px 8px rgba(192, 57, 43, 0.3);
+}
+
+.category-tab i {
+    font-size: 14px;
+}
+
+/* Categories页面内容区域样式 */
+.category-books-container {
+    min-height: 400px;
+}
+
 /* 登录页面 */
 .auth-screen {
     position: fixed;
@@ -1088,6 +1154,16 @@ body {
         gap: 15px;
     }
     
+    /* Categories页面平板样式 */
+    .category-tab {
+        padding: 9px 14px;
+        font-size: 13px;
+    }
+    
+    .category-tab i {
+        font-size: 13px;
+    }
+    
     .novel-hero {
         flex-direction: column;
         padding: 20px;
@@ -1231,6 +1307,20 @@ body {
     
     .category-card h3 {
         font-size: 16px;
+    }
+    
+    /* Categories页面移动端样式 */
+    .category-tabs {
+        gap: 6px;
+    }
+    
+    .category-tab {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .category-tab i {
+        font-size: 12px;
     }
     
     .reader-content {

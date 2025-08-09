@@ -5,8 +5,8 @@ const CONFIG = {
     SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJib2hxeHd6aWF2Y3Fpd21jaXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MDE3NDEsImV4cCI6MjA3MDA3Nzc0MX0.8MepqIP2eLmK6-TNw2JUGqobV_z0IIM9mZZi7kAvYOs',
     
     // 应用设置
-    APP_NAME: '小说阅读器',
-    APP_DESCRIPTION: 'AI缩写中国网络小说',
+    APP_NAME: 'NovelForge',
+    APP_DESCRIPTION: 'AI-Condensed Chinese Web Novels',
     
     // 分类配置
     CATEGORIES: [
@@ -52,9 +52,9 @@ const CONFIG = {
     
     // UI 设置
     ITEMS_PER_PAGE: 20,
-    LOADING_TIMEOUT: 30000, // 30秒超时
+    LOADING_TIMEOUT: 30000, // 30 seconds timeout
     
-    // 本地存储键名
+    // Local storage keys
     STORAGE_KEYS: {
         USER_SESSION: 'chop_fiction_session',
         USER_PREFERENCES: 'chop_fiction_preferences',
@@ -87,7 +87,7 @@ const Utils = {
     
     // 格式化价格
     formatPrice(price) {
-        if (price === 0) return '免费';
+        if (price === 0) return 'Free';
         return `¥${price.toFixed(2)}`;
     },
     
@@ -270,7 +270,7 @@ const Utils = {
     },
     
     // 显示加载状态
-    showLoading(container, message = '加载中...') {
+    showLoading(container, message = 'Loading...') {
         const loading = document.createElement('div');
         loading.className = 'loading-placeholder';
         loading.innerHTML = `
@@ -282,7 +282,7 @@ const Utils = {
     },
     
     // 显示空状态
-    showEmpty(container, title = '暂无数据', subtitle = '') {
+    showEmpty(container, title = 'No Data', subtitle = '') {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
         empty.innerHTML = `
@@ -295,14 +295,14 @@ const Utils = {
     },
     
     // 显示错误状态
-    showError(container, message = '加载失败，请稍后重试') {
+    showError(container, message = 'Loading failed, please try again later') {
         const error = document.createElement('div');
         error.className = 'empty-state';
         error.innerHTML = `
             <i class="fas fa-exclamation-triangle"></i>
-            <h3>出错了</h3>
+            <h3>Error Occurred</h3>
             <p>${message}</p>
-            <button class="btn btn-primary" onclick="location.reload()">重新加载</button>
+            <button class="btn btn-primary" onclick="location.reload()">Reload</button>
         `;
         container.innerHTML = '';
         container.appendChild(error);
