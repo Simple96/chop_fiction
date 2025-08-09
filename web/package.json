@@ -17,7 +17,8 @@
     "format": "npx prettier --write js/*.js styles/*.css *.html",
     "serve": "npx http-server . -p 8080 --cors",
     "test": "echo 'Tests would go here'",
-    "deploy": "npm run build && echo 'Deployment would go here'"
+    "deploy": "npm run build && echo 'Deployment would go here'",
+    "deploy:cloudflare": "npm run build && npx wrangler pages publish . --project-name=chop-fiction-web"
   },
   "keywords": [
     "novel",

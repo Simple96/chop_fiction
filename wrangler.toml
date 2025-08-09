@@ -1,0 +1,25 @@
+# Cloudflare Pages 配置文件
+name = "chop-fiction-web"
+compatibility_date = "2024-01-15"
+
+[build]
+command = "cd web && npm ci && npm run build"
+cwd = "."
+watch_dir = "web"
+
+[build.upload]
+format = "directory"
+dir = "web"
+exclude = ["node_modules", "*.log", ".git"]
+
+# 环境变量（如果需要）
+[env.production]
+# NODE_ENV = "production"
+
+[env.preview]
+# NODE_ENV = "development"
+
+# 自定义域名配置（可选）
+# [[route]]
+# pattern = "your-domain.com"
+# zone_name = "your-domain.com"

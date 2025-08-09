@@ -1,0 +1,8 @@
+# Cloudflare Pages 重定向规则
+# SPA 路由 - 所有请求都重定向到 index.html
+/*    /index.html   200
+
+# 可选：API 代理（如果需要）
+# /api/*  https://your-api-domain.com/api/:splat  200
+
+# 缓存规则（通过 _headers 文件处理）
