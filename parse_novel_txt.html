@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXT小说解析上传工具</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2C3E50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2C3E50;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #C0392B;
+        }
+        .file-input {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .file-input:hover {
+            border-color: #C0392B;
+            background-color: #f9f9f9;
+        }
+        .file-input.dragover {
+            border-color: #C0392B;
+            background-color: #fff5f5;
+        }
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+        .btn {
+            background: #2C3E50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #34495E;
+        }
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .preview {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .chapter-preview {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .chapter-title {
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 5px;
+        }
+        .chapter-content {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .success, .error {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #2C3E50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 TXT小说解析上传工具</h1>
+        
+        <div class="form-group">
+            <label>📁 第一步：选择TXT文件</label>
+            <div class="file-input" id="fileInput">
+                <p>📄 <strong>点击这里</strong>选择文件或拖拽TXT文件到这里</p>
+                <small style="color: #666; margin-top: 10px; display: block;">支持拖拽上传，文件格式：.txt</small>
+                <input type="file" id="fileSelector" accept=".txt" style="display: none;">
+            </div>
+        </div>
+
+        <!-- 自动解析信息显示 -->
+        <div id="autoInfo" class="preview" style="display: none; margin-top: 20px;">
+            <h4>🤖 自动解析信息</h4>
+            <div id="parsedInfo"></div>
+        </div>
+
+        <div id="basicInfo" style="display: none;">
+            <h3>📝 第二步：填写基本信息</h3>
+            <div class="form-group">
+                <label for="author">✍️ 作者 *</label>
+                <input type="text" id="author" required placeholder="输入作者名">
+            </div>
+            
+            <div class="form-group">
+                <label for="category">📂 类别 *</label>
+                <select id="category" required>
+                    <option value="">选择类别</option>
+                    <option value="Fantasy">Fantasy (玄幻)</option>
+                    <option value="Urban">Urban (都市)</option>
+                    <option value="Xianxia">Xianxia (仙侠)</option>
+                    <option value="Historical">Historical (历史)</option>
+                    <option value="Military">Military (军事)</option>
+                    <option value="Gaming">Gaming (游戏)</option>
+                    <option value="Sports">Sports (竞技)</option>
+                    <option value="Sci-Fi">Sci-Fi (科幻)</option>
+                    <option value="Supernatural">Supernatural (灵异)</option>
+                    <option value="Fanfiction">Fanfiction (同人)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">📝 小说描述 *</label>
+                <textarea id="description" required placeholder="请输入小说的详细描述，包括故事背景、主要情节、特色等..." rows="4"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">💰 价格 ($) *</label>
+                <input type="number" id="price" required min="0" step="0.01" value="9.99">
+            </div>
+        </div>
+
+        <div id="preview" style="display: none;">
+            <h3>📖 章节预览</h3>
+            <div id="chapterPreview" class="preview"></div>
+        </div>
+
+        <div class="progress" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div id="uploadSection" style="display: none; margin-top: 30px;">
+            <h3>🚀 第三步：上传到数据库</h3>
+            <button type="button" class="btn" id="uploadBtn">📤 上传小说到数据库</button>
+        </div>
+        
+        <div id="successMsg" class="success"></div>
+        <div id="errorMsg" class="error"></div>
+    </div>
+
+    <script>
+        // Supabase 配置
+        const supabaseUrl = 'https://bbohqxwziavcqiwmcitw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJib2hxeHd6aWF2Y3Fpd21jaXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MDE3NDEsImV4cCI6MjA3MDA3Nzc0MX0.8MepqIP2eLmK6-TNw2JUGqobV_z0IIM9mZZi7kAvYOs';
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let parsedNovel = null;
+        
+        // 文件处理
+        const fileInput = document.getElementById('fileInput');
+        const fileSelector = document.getElementById('fileSelector');
+        const basicInfo = document.getElementById('basicInfo');
+        const preview = document.getElementById('preview');
+        
+        fileInput.addEventListener('click', () => fileSelector.click());
+        fileInput.addEventListener('dragover', handleDragOver);
+        fileInput.addEventListener('drop', handleDrop);
+        fileSelector.addEventListener('change', handleFileSelect);
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            fileInput.classList.add('dragover');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            fileInput.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.txt')) {
+                processFile(files[0]);
+            }
+        }
+        
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file && file.name.endsWith('.txt')) {
+                processFile(file);
+            }
+        }
+        
+        function processFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parsedNovel = parseNovelText(content, file.name);
+                displayPreview(parsedNovel);
+                
+                // 显示各个部分
+                document.getElementById('autoInfo').style.display = 'block';
+                basicInfo.style.display = 'block';
+                preview.style.display = 'block';
+                document.getElementById('uploadSection').style.display = 'block';
+                
+                // 自动填充标题
+                if (parsedNovel.title) {
+                    fileInput.innerHTML = `<p>✅ 已加载: ${parsedNovel.title}</p>`;
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+        
+        function parseNovelText(content, filename) {
+            const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            
+            let title = '';
+            let chapters = [];
+            let currentChapter = null;
+            let currentContent = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                
+                // 检测标题（通常是第一行或者全大写）
+                if (i === 0 && !title) {
+                    title = line;
+                    continue;
+                }
+                
+                // 检测章节标题
+                if (line.match(/^Chapter\s+\d+/i) || line.match(/^第\s*\d+\s*章/)) {
+                    // 保存上一章
+                    if (currentChapter) {
+                        currentChapter.content = currentContent.join('\n\n').trim();
+                        if (currentChapter.content) {
+                            chapters.push(currentChapter);
+                        }
+                    }
+                    
+                    // 开始新章节
+                    currentChapter = {
+                        title: line,
+                        content: ''
+                    };
+                    currentContent = [];
+                } else if (currentChapter) {
+                    // 章节内容
+                    if (line.length > 0) {
+                        currentContent.push(line);
+                    }
+                } else if (!title && line.length > 0) {
+                    // 如果还没有标题，使用文件名
+                    title = filename.replace('.txt', '').replace(/_/g, ' ');
+                }
+            }
+            
+            // 保存最后一章
+            if (currentChapter && currentContent.length > 0) {
+                currentChapter.content = currentContent.join('\n\n').trim();
+                chapters.push(currentChapter);
+            }
+            
+            // 如果没有检测到章节，将整个内容作为一章
+            if (chapters.length === 0 && lines.length > 1) {
+                chapters.push({
+                    title: 'Chapter 1',
+                    content: lines.slice(1).join('\n\n')
+                });
+            }
+            
+            return {
+                title: title || filename.replace('.txt', '').replace(/_/g, ' '),
+                chapters: chapters
+            };
+        }
+        
+        function displayPreview(novel) {
+            // 显示自动解析信息
+            const parsedInfoContainer = document.getElementById('parsedInfo');
+            const totalWords = novel.chapters.reduce((sum, chapter) => sum + chapter.content.length, 0);
+            const freeChapters = Math.min(3, novel.chapters.length);
+            
+            parsedInfoContainer.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #2C3E50;">📚 ${novel.chapters.length}</div>
+                        <div style="color: #666; margin-top: 5px;">总章节数</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #27ae60;">🆓 ${freeChapters}</div>
+                        <div style="color: #666; margin-top: 5px;">免费章节</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">💰 ${novel.chapters.length - freeChapters}</div>
+                        <div style="color: #666; margin-top: 5px;">付费章节</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #8e44ad;">📝 ${totalWords.toLocaleString()}</div>
+                        <div style="color: #666; margin-top: 5px;">总字数</div>
+                    </div>
+                </div>
+                <div style="background: #e8f5e8; padding: 10px; border-radius: 6px; margin-top: 10px;">
+                    <strong>📖 小说标题:</strong> ${novel.title}
+                </div>
+            `;
+            
+            // 显示章节预览
+            const previewContainer = document.getElementById('chapterPreview');
+            let html = '';
+            
+            novel.chapters.slice(0, 3).forEach((chapter, index) => {
+                const isFree = index < freeChapters;
+                html += `
+                    <div class="chapter-preview">
+                        <div class="chapter-title">
+                            ${chapter.title} 
+                            <span style="color: ${isFree ? '#27ae60' : '#e74c3c'}; font-size: 12px; margin-left: 10px;">
+                                ${isFree ? '🆓 免费' : '💰 付费'}
+                            </span>
+                        </div>
+                        <div class="chapter-content">${chapter.content.substring(0, 200)}...</div>
+                    </div>
+                `;
+            });
+            
+            if (novel.chapters.length > 3) {
+                html += `<p><em>... 还有 ${novel.chapters.length - 3} 个章节</em></p>`;
+            }
+            
+            previewContainer.innerHTML = html;
+        }
+        
+        // 上传处理
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            if (!parsedNovel) {
+                showError('请先选择并解析TXT文件');
+                return;
+            }
+            
+            const author = document.getElementById('author').value.trim();
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value.trim();
+            const freeChapters = 3; // 固定前3章免费
+            const price = parseFloat(document.getElementById('price').value);
+            
+            if (!author || !category || !description) {
+                showError('请填写作者、类别和小说描述');
+                return;
+            }
+            
+            // 自动设置免费章节数为3章或总章节数（如果少于3章）
+            const actualFreeChapters = Math.min(freeChapters, parsedNovel.chapters.length);
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ 上传中...';
+            progressContainer.style.display = 'block';
+            
+            try {
+                // 1. 创建小说记录
+                progressBar.style.width = '10%';
+                
+                const novelData = {
+                    title: parsedNovel.title,
+                    author: author,
+                    description: description,
+                    category: category,
+                    cover_image: 'https://via.placeholder.com/300x400',
+                    original_language: 'zh-CN',
+                    translated_language: 'en',
+                    total_chapters: parsedNovel.chapters.length,
+                    free_chapters: actualFreeChapters,
+                    price: price
+                };
+                
+                const { data: novelResult, error: novelError } = await supabase
+                    .from('novels')
+                    .insert([novelData])
+                    .select();
+                
+                if (novelError) throw novelError;
+                
+                const novelId = novelResult[0].id;
+                progressBar.style.width = '30%';
+                
+                // 2. 批量上传章节
+                const chapterData = parsedNovel.chapters.map((chapter, index) => ({
+                    novel_id: novelId,
+                    chapter_number: index + 1,
+                    title: chapter.title,
+                    content: chapter.content,
+                    is_free: index < actualFreeChapters
+                }));
+                
+                // 分批上传章节（每次20个）
+                const batchSize = 20;
+                for (let i = 0; i < chapterData.length; i += batchSize) {
+                    const batch = chapterData.slice(i, i + batchSize);
+                    const { error: chapterError } = await supabase
+                        .from('chapters')
+                        .insert(batch);
+                    
+                    if (chapterError) throw chapterError;
+                    
+                    const progress = 30 + (70 * (i + batchSize)) / chapterData.length;
+                    progressBar.style.width = `${Math.min(progress, 100)}%`;
+                }
+                
+                progressBar.style.width = '100%';
+                
+                showSuccess(`🎉 成功上传小说: <strong>${parsedNovel.title}</strong><br>
+                           📍 小说ID: ${novelId}<br>
+                           📚 章节数: ${parsedNovel.chapters.length}<br>
+                           🆓 免费章节: ${actualFreeChapters}<br>
+                           💰 价格: $${price}`);
+                
+                // 重置表单
+                resetForm();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`❌ 上传失败: ${error.message}`);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '🚀 解析并上传小说';
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    progressBar.style.width = '0%';
+                }, 2000);
+            }
+        });
+        
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.style.display = 'none';
+            successMsg.innerHTML = message;
+            successMsg.style.display = 'block';
+            successMsg.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+            successMsg.style.display = 'none';
+            errorMsg.innerHTML = message;
+            errorMsg.style.display = 'block';
+            errorMsg.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetForm() {
+            parsedNovel = null;
+            document.getElementById('author').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('price').value = '9.99';
+            fileInput.innerHTML = '<p>📄 <strong>点击这里</strong>选择文件或拖拽TXT文件到这里</p><small style="color: #666; margin-top: 10px; display: block;">支持拖拽上传，文件格式：.txt</small>';
+            document.getElementById('autoInfo').style.display = 'none';
+            basicInfo.style.display = 'none';
+            preview.style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'none';
+            fileSelector.value = '';
+        }
+    </script>
+</body>
+</html>

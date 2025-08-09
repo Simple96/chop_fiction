@@ -1,0 +1,49 @@
+{
+  "name": "chop-fiction-web",
+  "version": "1.0.0",
+  "description": "AI缩写中国网络小说 - 网页版",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 3000 -o --cors",
+    "dev": "npx http-server . -p 3000 -o --cors -c-1",
+    "build": "npm run minify && npm run optimize",
+    "minify": "npm run minify:css && npm run minify:js",
+    "minify:css": "npx clean-css-cli styles/main.css -o styles/main.min.css",
+    "minify:js": "npx terser js/*.js -c -m -o js/app.min.js",
+    "optimize": "npm run optimize:images",
+    "optimize:images": "echo 'Image optimization would go here'",
+    "lint": "npx eslint js/*.js",
+    "lint:fix": "npx eslint js/*.js --fix",
+    "format": "npx prettier --write js/*.js styles/*.css *.html",
+    "serve": "npx http-server . -p 8080 --cors",
+    "test": "echo 'Tests would go here'",
+    "deploy": "npm run build && echo 'Deployment would go here'"
+  },
+  "keywords": [
+    "novel",
+    "reading",
+    "ai",
+    "chinese",
+    "web",
+    "fiction"
+  ],
+  "author": "ChopFiction Team",
+  "license": "MIT",
+  "devDependencies": {
+    "clean-css-cli": "^5.6.2",
+    "eslint": "^8.57.0",
+    "http-server": "^14.1.1",
+    "prettier": "^3.2.5",
+    "terser": "^5.27.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "type": "commonjs"
+}
