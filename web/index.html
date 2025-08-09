@@ -1,233 +1,833 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novica - AI Condensed Chinese Web Novels</title>
+    <title>Novica - Shaping Stories Smarter</title>
     <link rel="icon" type="image/png" href="./assets/app_logo.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="./styles/main.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #2C3E50;
+            background: linear-gradient(135deg, #F4F4F4 0%, #E5E5E5 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(44, 62, 80, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+        .brand-name {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #D4AF37;
+        }
+
+        .login-btn {
+            background: #2C3E50;
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.4);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 0;
+        }
+
+        .hero-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 0 60px 0;
+            background-image: url('./assets/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .hero-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .hero-section {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 600px;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(44, 62, 80, 0.1);
+            margin: 0 30px;
+        }
+
+        .hero-logo {
+            max-width: 80px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: #C0392B;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            color: #34495E;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-section {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, #2C3E50, #34495E);
+            color: white;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: #C0392B;
+            border: 2px solid #C0392B;
+        }
+
+        .cta-secondary:hover {
+            background: #C0392B;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+            background: #F4F4F4;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            color: #C0392B;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2C3E50;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            color: #34495E;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .about-text h3 {
+            color: #2C3E50;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .about-text h3:first-child {
+            margin-top: 0;
+        }
+
+        .about-text p {
+            color: #34495E;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 30px 20px;
+            background: #F4F4F4;
+            border-radius: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            border-color: #D4AF37;
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7F8C8D;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            background: #F4F4F4;
+            padding: 80px 0;
+            margin-top: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 60px;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .review {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .review:hover {
+            transform: translateY(-5px);
+        }
+
+        .review-stars {
+            color: #D4AF37;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .review-text {
+            color: #34495E;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .author-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2C3E50;
+            margin: 0 0 5px 0;
+        }
+
+        .author-title {
+            font-size: 14px;
+            color: #7F8C8D;
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2C3E50;
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-text {
+            color: #BDC3C7;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #34495E;
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: #D4AF37;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #BDC3C7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #D4AF37;
+        }
+
+        .contact-info p {
+            color: #BDC3C7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .contact-info i {
+            color: #D4AF37;
+            margin-top: 2px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #34495E;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copyright p {
+            color: #BDC3C7;
+            margin: 0;
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-legal a {
+            color: #BDC3C7;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-legal a:hover {
+            color: #D4AF37;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 20px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .cta-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .nav-container {
+                padding: 0 20px;
+            }
+
+            .brand-name {
+                font-size: 20px;
+            }
+
+            .login-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-legal {
+                justify-content: center;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .about-stats {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Loading display -->
-        <div id="loading" class="loading-screen">
-            <div class="loading-spinner"></div>
-            <p>Loading...</p>
-        </div>
-        
-        <!-- 主应用容器 -->
-        <div id="main-app" class="main-app hidden">
-            <!-- 导航栏 -->
-            <nav id="navbar" class="navbar">
-                <div class="nav-brand">
-                    <img src="./assets/app_logo.png" alt="Logo" class="nav-logo">
-                    <span class="nav-title">Novica</span>
-                </div>
-                <div class="nav-menu">
-                    <a href="#" data-screen="bookshelf" class="nav-item active">
-                        <i class="fas fa-book"></i>
-                        <span>Bookshelf</span>
-                    </a>
-                    <a href="#" data-screen="recommendations" class="nav-item">
-                        <i class="fas fa-star"></i>
-                        <span>Discover</span>
-                    </a>
-                    <a href="#" data-screen="categories" class="nav-item">
-                        <i class="fas fa-th-large"></i>
-                        <span>Categories</span>
-                    </a>
-                    <a href="#" data-screen="profile" class="nav-item">
-                        <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                </div>
-                <div class="nav-user">
-                    <button id="logout-btn" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </button>
-                </div>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo-section">
+                <img src="./assets/app_logo.png" alt="Novica" class="logo">
+                <a href="#" class="brand-name">Novica</a>
+            </div>
+            <nav class="nav-links">
+                <a href="#about" class="nav-link">About Us</a>
+                <a href="./app.html" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </a>
             </nav>
-
-            <!-- 主要内容区域 -->
-            <main id="main-content" class="main-content">
-                <!-- 书架页面 -->
-                <div id="bookshelf-screen" class="screen active">
-                    <div class="screen-header">
-                        <h1>My Bookshelf</h1>
-                    </div>
-                    <div id="bookshelf-content" class="content-area">
-                        <div class="loading-placeholder">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading bookshelf...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 推荐页面 -->
-                <div id="recommendations-screen" class="screen">
-                    <div class="screen-header">
-                        <h1>Discover Books</h1>
-                    </div>
-                    <div id="recommendations-content" class="content-area">
-                        <div class="loading-placeholder">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading recommendations...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 分类页面 -->
-                <div id="categories-screen" class="screen">
-                    <div class="screen-header">
-                        <h1>Novel Categories</h1>
-                    </div>
-                    <div id="categories-content" class="content-area">
-                        <div class="loading-placeholder">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading categories...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 个人中心页面 -->
-                <div id="profile-screen" class="screen">
-                    <div class="screen-header">
-                        <h1>Profile</h1>
-                    </div>
-                    <div id="profile-content" class="content-area">
-                        <div class="loading-placeholder">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading profile...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 小说详情页面 -->
-                <div id="novel-detail-screen" class="screen">
-                    <div class="screen-header">
-                        <button id="back-to-main" class="back-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            <span>Back</span>
-                        </button>
-                        <h1 id="novel-detail-title">Novel Details</h1>
-                    </div>
-                    <div id="novel-detail-content" class="content-area">
-                        <!-- 小说详情内容将在这里动态加载 -->
-                    </div>
-                </div>
-
-                <!-- 阅读器页面 -->
-                <div id="reader-screen" class="screen">
-                    <div class="screen-header">
-                        <button id="back-to-detail" class="back-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            <span>Back</span>
-                        </button>
-                        <h1 id="reader-title">Reading</h1>
-                        <div class="reader-controls">
-                            <button id="prev-chapter" class="reader-btn">
-                                <i class="fas fa-chevron-left"></i>
-                                <span>Previous</span>
-                            </button>
-                            <button id="next-chapter" class="reader-btn">
-                                <span>Next</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="reader-content" class="content-area reader-content">
-                        <!-- 阅读内容将在这里动态加载 -->
-                    </div>
-                </div>
-            </main>
         </div>
+    </header>
 
-        <!-- 登录页面 -->
-        <div id="auth-screen" class="auth-screen">
-            <div class="auth-container">
-                <div class="auth-header">
-                    <img src="./assets/app_logo_slogan.png" alt="Novica - Shaping Stories Smarter" class="auth-logo-slogan">
-                </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="hero-container">
+            <section class="hero-section">
+                <img src="./assets/app_logo.png" alt="Novica" class="hero-logo">
                 
-                <div class="auth-forms">
-                    <!-- Login form -->
-                    <div id="login-form" class="auth-form active">
-                        <form id="login-form-element">
-                            <div class="form-group">
-                                <label for="login-email">Email</label>
-                                <input type="email" id="login-email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="login-password">Password</label>
-                                <input type="password" id="login-password" name="password" required>
-                            </div>
-                            <button type="submit" class="auth-btn">Login</button>
-                        </form>
-                        <p class="auth-switch">
-                            Don't have an account? <a href="#" id="show-register">Register now</a>
-                        </p>
-                    </div>
+                <h1 class="hero-title">Welcome to Novica</h1>
+                <h2 class="hero-subtitle">Shaping Stories Smarter</h2>
+                
+                <p class="hero-description">
+                    Discover stories crafted by AI authors with unique personalities and writing styles. 
+                    Each AI writer brings their own perspective, creating diverse narratives that captivate and inspire readers worldwide.
+                </p>
 
-                    <!-- Register form -->
-                    <div id="register-form" class="auth-form">
-                        <form id="register-form-element">
-                            <div class="form-group">
-                                <label for="register-email">Email</label>
-                                <input type="email" id="register-email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="register-password">Password</label>
-                                <input type="password" id="register-password" name="password" required minlength="6">
-                            </div>
-                            <div class="form-group">
-                                <label for="register-username">Username (Optional)</label>
-                                <input type="text" id="register-username" name="username">
-                            </div>
-                            <button type="submit" class="auth-btn">Register</button>
-                        </form>
-                        <p class="auth-switch">
-                            Already have an account? <a href="#" id="show-login">Login now</a>
-                        </p>
+                <div class="cta-section">
+                    <a href="./app.html" class="cta-btn cta-primary">
+                        <i class="fas fa-rocket"></i>
+                        Start Reading
+                    </a>
+                    <a href="#features" class="cta-btn cta-secondary">
+                        <i class="fas fa-info-circle"></i>
+                        Learn More
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <section class="features-section">
+            <div class="container">
+                <div id="features" class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="feature-title">AI-Powered</h3>
+                    <p class="feature-desc">Unique AI authors with distinct personalities create original stories tailored to different tastes and preferences.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="feature-title">Time-Saving</h3>
+                    <p class="feature-desc">Read complete stories in hours instead of weeks. Perfect for busy readers who love great narratives.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="feature-title">Rich Library</h3>
+                    <p class="feature-desc">Discover thousands of novels across multiple genres, from fantasy to romance to sci-fi, all written by specialized AI authors.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <h3 class="feature-title">Custom Creation</h3>
+                    <p class="feature-desc">Future feature: AI authors will create personalized stories based on your world-building ideas and creative vision.</p>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title">About Us</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Pioneering AI-Driven Storytelling</h3>
+                        <p>At Novica, we believe every story deserves to be told with passion and authenticity. Our revolutionary platform harnesses the power of artificial intelligence to create a diverse community of AI authors, each with their own unique personality, writing style, and creative perspective.</p>
+                        
+                        <p>Founded in 2024 in the heart of San Francisco, we're on a mission to democratize storytelling and make great literature accessible to everyone. Our AI authors don't just write stories—they craft experiences, bringing together technology and creativity in ways never before possible.</p>
+                        
+                        <h3>Our Vision</h3>
+                        <p>We envision a future where AI and human creativity work hand in hand, where every reader can find stories that resonate with their unique tastes, and where the barriers between imagination and reality continue to blur. Through our platform, we're not just sharing stories—we're shaping the future of literature itself.</p>
+                        
+                        <h3>What Makes Us Different</h3>
+                        <p>Unlike traditional AI writing tools, our platform features distinct AI personalities, each trained to embody different writing styles, cultural perspectives, and narrative approaches. This means every story you read feels authentic and unique, as if written by a real person with their own voice and vision.</p>
+                    </div>
+                    
+                    <div class="about-stats">
+                        <div class="stat">
+                            <div class="stat-number">50+</div>
+                            <div class="stat-label">AI Authors</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-label">Stories Created</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">25+</div>
+                            <div class="stat-label">Genres Covered</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">100K+</div>
+                            <div class="stat-label">Happy Readers</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- 模态框 -->
-    <div id="modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title">Notice</h3>
-                <button id="modal-close" class="modal-close">
-                    <i class="fas fa-times"></i>
-                </button>
+        <!-- Reviews Section -->
+        <section class="reviews-section">
+            <div class="container">
+                <h2 class="section-title">What Our Readers Say</h2>
+                <div class="reviews-grid">
+                    <div class="review">
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text">"The AI authors have such unique voices! I love how each story feels completely different. It's like having a whole library of different writers at my fingertips."</p>
+                        <div class="review-author">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face" alt="Sarah Chen" class="author-avatar">
+                            <div class="author-info">
+                                <h4 class="author-name">Sarah Chen</h4>
+                                <p class="author-title">Book Enthusiast</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review">
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text">"Perfect for my busy schedule. I can finally keep up with great stories without spending weeks on each book. The quality is surprisingly good!"</p>
+                        <div class="review-author">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face" alt="Michael Rodriguez" class="author-avatar">
+                            <div class="author-info">
+                                <h4 class="author-name">Michael Rodriguez</h4>
+                                <p class="author-title">Software Engineer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review">
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <p class="review-text">"Amazing variety of genres and writing styles. Each AI author feels like a real person with their own personality. Can't wait for the custom creation feature!"</p>
+                        <div class="review-author">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face" alt="Emma Thompson" class="author-avatar">
+                            <div class="author-info">
+                                <h4 class="author-name">Emma Thompson</h4>
+                                <p class="author-title">Marketing Manager</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="modal-body" class="modal-body">
-                <!-- 模态框内容 -->
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">About Novica</h3>
+                    <p class="footer-text">Pioneering the future of storytelling with AI authors that bring unique personalities and perspectives to every narrative.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="./app.html">Start Reading</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> 1455 Market Street, Suite 1600<br>San Francisco, CA 94103</p>
+                        <p><i class="fas fa-envelope"></i> hello@novica.com</p>
+                        <p><i class="fas fa-phone"></i> +1 (415) 555-0123</p>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
-                <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+
+            <div class="footer-bottom">
+                <div class="copyright">
+                    <p>&copy; 2025 Novica. All rights reserved.</p>
+                </div>
+                <div class="footer-legal">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Service</a>
+                    <a href="#cookies">Cookie Policy</a>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.53.0/dist/umd/supabase.min.js"></script>
-    <script src="./js/config.js"></script>
-    <script src="./js/supabase.js"></script>
-    <script src="./js/auth.js"></script>
-    <script src="./js/navigation.js"></script>
-    <script src="./js/bookshelf.js"></script>
-    <script src="./js/recommendations.js"></script>
-    <script src="./js/categories.js"></script>
-    <script src="./js/profile.js"></script>
-    <script src="./js/novel-detail.js"></script>
-    <script src="./js/reader.js"></script>
-    <script src="./js/modal.js"></script>
-    <script src="./js/app.js"></script>
+    </footer>
 </body>
 </html>
