@@ -41,7 +41,7 @@ class BookshelfManager {
         }
         
         this.loading = true;
-        Utils.showLoading(container, '加载书架中...');
+        Utils.showLoading(container, 'Loading bookshelf...');
         
         try {
             const result = await window.supabaseClient.getBookshelf();
@@ -54,7 +54,7 @@ class BookshelfManager {
             }
         } catch (error) {
             console.error('Load bookshelf error:', error);
-            Utils.showError(container, '加载书架失败，请稍后重试');
+            Utils.showError(container, 'Failed to load bookshelf, please try again later');
         } finally {
             this.loading = false;
         }

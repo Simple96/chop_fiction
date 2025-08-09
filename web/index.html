@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelForge - AI缩写中国网络小说</title>
+    <title>NovelForge - AI Condensed Chinese Web Novels</title>
     <link rel="icon" type="image/png" href="./assets/app_logo.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="./styles/main.css" rel="stylesheet">
 </head>
 <body>
     <div id="app">
-        <!-- 加载中显示 -->
+        <!-- Loading display -->
         <div id="loading" class="loading-screen">
             <div class="loading-spinner"></div>
-            <p>加载中...</p>
+            <p>Loading...</p>
         </div>
         
         <!-- 主应用容器 -->
@@ -27,25 +27,25 @@
                 <div class="nav-menu">
                     <a href="#" data-screen="bookshelf" class="nav-item active">
                         <i class="fas fa-book"></i>
-                        <span>书架</span>
+                        <span>Bookshelf</span>
                     </a>
                     <a href="#" data-screen="recommendations" class="nav-item">
                         <i class="fas fa-star"></i>
-                        <span>发现</span>
+                        <span>Discover</span>
                     </a>
                     <a href="#" data-screen="categories" class="nav-item">
                         <i class="fas fa-th-large"></i>
-                        <span>分类</span>
+                        <span>Categories</span>
                     </a>
                     <a href="#" data-screen="profile" class="nav-item">
                         <i class="fas fa-user"></i>
-                        <span>我的</span>
+                        <span>Profile</span>
                     </a>
                 </div>
                 <div class="nav-user">
                     <button id="logout-btn" class="logout-btn">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>退出</span>
+                        <span>Logout</span>
                     </button>
                 </div>
             </nav>
@@ -55,12 +55,12 @@
                 <!-- 书架页面 -->
                 <div id="bookshelf-screen" class="screen active">
                     <div class="screen-header">
-                        <h1>我的书架</h1>
+                        <h1>My Bookshelf</h1>
                     </div>
                     <div id="bookshelf-content" class="content-area">
                         <div class="loading-placeholder">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>加载书架中...</p>
+                            <p>Loading bookshelf...</p>
                         </div>
                     </div>
                 </div>
@@ -68,12 +68,12 @@
                 <!-- 推荐页面 -->
                 <div id="recommendations-screen" class="screen">
                     <div class="screen-header">
-                        <h1>发现好书</h1>
+                        <h1>Discover Books</h1>
                     </div>
                     <div id="recommendations-content" class="content-area">
                         <div class="loading-placeholder">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>加载推荐中...</p>
+                            <p>Loading recommendations...</p>
                         </div>
                     </div>
                 </div>
@@ -81,12 +81,12 @@
                 <!-- 分类页面 -->
                 <div id="categories-screen" class="screen">
                     <div class="screen-header">
-                        <h1>小说分类</h1>
+                        <h1>Novel Categories</h1>
                     </div>
                     <div id="categories-content" class="content-area">
                         <div class="loading-placeholder">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>加载分类中...</p>
+                            <p>Loading categories...</p>
                         </div>
                     </div>
                 </div>
@@ -94,12 +94,12 @@
                 <!-- 个人中心页面 -->
                 <div id="profile-screen" class="screen">
                     <div class="screen-header">
-                        <h1>个人中心</h1>
+                        <h1>Profile</h1>
                     </div>
                     <div id="profile-content" class="content-area">
                         <div class="loading-placeholder">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>加载用户信息中...</p>
+                            <p>Loading profile...</p>
                         </div>
                     </div>
                 </div>
@@ -150,49 +150,49 @@
                 <div class="auth-header">
                     <img src="./assets/app_logo.png" alt="Logo" class="auth-logo">
                     <h1>NovelForge</h1>
-                    <p>AI缩写中国网络小说</p>
+                    <p>AI Condensed Chinese Web Novels</p>
                 </div>
                 
                 <div class="auth-forms">
-                    <!-- 登录表单 -->
+                    <!-- Login form -->
                     <div id="login-form" class="auth-form active">
-                        <h2>登录</h2>
+                        <h2>Login</h2>
                         <form id="login-form-element">
                             <div class="form-group">
-                                <label for="login-email">邮箱</label>
+                                <label for="login-email">Email</label>
                                 <input type="email" id="login-email" name="email" required>
                             </div>
                             <div class="form-group">
-                                <label for="login-password">密码</label>
+                                <label for="login-password">Password</label>
                                 <input type="password" id="login-password" name="password" required>
                             </div>
-                            <button type="submit" class="auth-btn">登录</button>
+                            <button type="submit" class="auth-btn">Login</button>
                         </form>
                         <p class="auth-switch">
-                            没有账号？<a href="#" id="show-register">立即注册</a>
+                            Don't have an account? <a href="#" id="show-register">Register now</a>
                         </p>
                     </div>
 
-                    <!-- 注册表单 -->
+                    <!-- Register form -->
                     <div id="register-form" class="auth-form">
-                        <h2>注册</h2>
+                        <h2>Register</h2>
                         <form id="register-form-element">
                             <div class="form-group">
-                                <label for="register-email">邮箱</label>
+                                <label for="register-email">Email</label>
                                 <input type="email" id="register-email" name="email" required>
                             </div>
                             <div class="form-group">
-                                <label for="register-password">密码</label>
+                                <label for="register-password">Password</label>
                                 <input type="password" id="register-password" name="password" required minlength="6">
                             </div>
                             <div class="form-group">
-                                <label for="register-username">用户名（可选）</label>
+                                <label for="register-username">Username (Optional)</label>
                                 <input type="text" id="register-username" name="username">
                             </div>
-                            <button type="submit" class="auth-btn">注册</button>
+                            <button type="submit" class="auth-btn">Register</button>
                         </form>
                         <p class="auth-switch">
-                            已有账号？<a href="#" id="show-login">立即登录</a>
+                            Already have an account? <a href="#" id="show-login">Login now</a>
                         </p>
                     </div>
                 </div>

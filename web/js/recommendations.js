@@ -45,7 +45,7 @@ class RecommendationsManager {
         this.loading = true;
         
         if (reset) {
-            Utils.showLoading(container, '加载推荐中...');
+            Utils.showLoading(container, 'Loading recommendations...');
         }
         
         try {
@@ -81,9 +81,9 @@ class RecommendationsManager {
             if (reset && this.novels.length === 0) {
                 this.loadMockData();
                 this.renderRecommendations(container, true);
-                Utils.showNotification('正在使用演示数据', 'info');
+                Utils.showNotification('Using demo data', 'info');
             } else {
-                Utils.showError(container, '加载推荐失败，请稍后重试');
+                Utils.showError(container, 'Failed to load recommendations, please try again later');
             }
         } finally {
             this.loading = false;
@@ -192,8 +192,8 @@ class RecommendationsManager {
         if (this.novels.length === 0) {
             Utils.showEmpty(
                 container, 
-                '暂无推荐内容', 
-                '请稍后再试或联系管理员'
+                'No recommendations available', 
+                'Please try again later or contact administrator'
             );
             return;
         }
@@ -245,12 +245,12 @@ class RecommendationsManager {
                  onerror="Utils.handleImageError(this)">
             <div class="book-info">
                 <h3 class="book-title" title="${novel.title}">${novel.title}</h3>
-                <p class="book-author">作者：${novel.author}</p>
+                <p class="book-author">Author: ${novel.author}</p>
                 <p class="book-description">${Utils.truncateText(novel.description, 100)}</p>
                 <div class="book-meta">
                     <span class="book-category">${Utils.getCategoryDisplayName(novel.category)}</span>
-                    <span class="book-chapters">${novel.total_chapters} 章</span>
-                    <span class="book-chapters">前${freePercentage}%免费</span>
+                    <span class="book-chapters">${novel.total_chapters} chapters</span>
+                    <span class="book-chapters">First ${freePercentage}% free</span>
                     ${novel.price > 0 ? `<span class="book-price">${Utils.formatPrice(novel.price)}</span>` : ''}
                 </div>
             </div>
@@ -293,10 +293,10 @@ class RecommendationsManager {
             loadMoreContainer.innerHTML = `
                 <button class="btn btn-outline load-more-btn">
                     <i class="fas fa-plus"></i>
-                    <span>加载更多</span>
+                    <span>Load More</span>
                 </button>
                 <p style="margin-top: 10px; color: #666; font-size: 14px;">
-                    或向下滚动自动加载
+                    Or scroll down to auto-load
                 </p>
             `;
             
@@ -308,7 +308,7 @@ class RecommendationsManager {
             loadMoreContainer.innerHTML = `
                 <p style="color: #666; font-size: 14px;">
                     <i class="fas fa-check-circle"></i>
-                    已显示全部推荐内容
+                    All recommendations loaded
                 </p>
             `;
         }
@@ -338,7 +338,7 @@ class RecommendationsManager {
         if (!container) return;
         
         this.loading = true;
-        Utils.showLoading(container, '搜索中...');
+        Utils.showLoading(container, 'Searching...');
         
         try {
             const options = {
@@ -365,8 +365,8 @@ class RecommendationsManager {
                 if (this.novels.length === 0) {
                     Utils.showEmpty(
                         container,
-                        '未找到相关小说',
-                        '尝试使用其他关键词搜索'
+                        'No novels found',
+                        'Try searching with different keywords'
                     );
                 }
             } else {
@@ -374,7 +374,7 @@ class RecommendationsManager {
             }
         } catch (error) {
             console.error('Search novels error:', error);
-            Utils.showError(container, '搜索失败，请稍后重试');
+            Utils.showError(container, 'Search failed, please try again later');
         } finally {
             this.loading = false;
         }
