@@ -102,19 +102,19 @@ class AuthManager {
         
         // 表单验证
         if (!this.validateEmail(email)) {
-            Utils.showNotification('请输入有效的邮箱地址', 'error');
+            Utils.showNotification('Please enter a valid email address', 'error');
             return;
         }
         
         if (!password || password.length < 6) {
-            Utils.showNotification('密码至少需要6个字符', 'error');
+            Utils.showNotification('Password must be at least 6 characters', 'error');
             return;
         }
         
         // 显示加载状态
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = '登录中...';
+        submitBtn.textContent = 'Logging in...';
         submitBtn.disabled = true;
         
         try {
@@ -143,19 +143,19 @@ class AuthManager {
         
         // 表单验证
         if (!this.validateEmail(email)) {
-            Utils.showNotification('请输入有效的邮箱地址', 'error');
+            Utils.showNotification('Please enter a valid email address', 'error');
             return;
         }
         
         if (!password || password.length < 6) {
-            Utils.showNotification('密码至少需要6个字符', 'error');
+            Utils.showNotification('Password must be at least 6 characters', 'error');
             return;
         }
         
         // 显示加载状态
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = '注册中...';
+        submitBtn.textContent = 'Registering...';
         submitBtn.disabled = true;
         
         try {
@@ -279,7 +279,7 @@ class AuthManager {
         }
         if (loginForm) loginForm.classList.remove('active');
         
-        document.title = `注册 - ${CONFIG.APP_NAME}`;
+        document.title = `Register - ${CONFIG.APP_NAME}`;
     }
     
     // 显示邮箱验证消息
@@ -402,7 +402,7 @@ class AuthManager {
             const email = formData.get('email').trim();
             
             if (!this.validateEmail(email)) {
-                Utils.showNotification('请输入有效的邮箱地址', 'error');
+                Utils.showNotification('Please enter a valid email address', 'error');
                 return;
             }
             

@@ -529,7 +529,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -537,17 +537,18 @@ body {
 }
 
 .auth-container {
-    background-color: #fff;
+    background-color: #F4F4F4;
     border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 40px rgba(44, 62, 80, 0.2);
     overflow: hidden;
     width: 100%;
     max-width: 400px;
     margin: 20px;
+    border: 1px solid #E5E5E5;
 }
 
 .auth-header {
-    background: linear-gradient(135deg, #C0392B, #E74C3C);
+    background: linear-gradient(135deg, #C0392B, #D4AF37);
     color: white;
     padding: 40px 30px;
     text-align: center;
@@ -572,10 +573,12 @@ body {
 
 .auth-forms {
     position: relative;
+    background-color: #FFFFFF;
+    padding: 30px;
 }
 
 .auth-form {
-    padding: 30px;
+    padding: 0;
     display: none;
 }
 
@@ -618,7 +621,7 @@ body {
 .auth-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #C0392B, #E74C3C);
+    background: linear-gradient(135deg, #C0392B, #D4AF37);
     color: white;
     border: none;
     border-radius: 8px;
@@ -631,7 +634,8 @@ body {
 
 .auth-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.4);
+    background: linear-gradient(135deg, #A93226, #B8860B);
 }
 
 .auth-switch {
