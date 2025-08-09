@@ -179,8 +179,8 @@ class AuthManager {
     async handleLogout() {
         // 显示确认对话框
         window.navigationManager.showConfirmDialog(
-            '确认退出',
-            '您确定要退出登录吗？',
+            'Confirm Logout',
+            'Are you sure you want to logout?',
             async () => {
                 try {
                     await window.supabaseClient.signOut();
@@ -243,7 +243,7 @@ class AuthManager {
         }
         
         // 设置页面标题
-        document.title = `登录 - ${CONFIG.APP_NAME}`;
+        document.title = `Login - ${CONFIG.APP_NAME}`;
     }
     
     // 显示登录表单
@@ -261,7 +261,7 @@ class AuthManager {
         }
         if (registerForm) registerForm.classList.remove('active');
         
-        document.title = `登录 - ${CONFIG.APP_NAME}`;
+        document.title = `Login - ${CONFIG.APP_NAME}`;
     }
     
     // 显示注册表单
@@ -322,7 +322,7 @@ class AuthManager {
         return profile?.username || 
                profile?.full_name || 
                this.user.email?.split('@')[0] || 
-               '用户';
+               'User';
     }
     
     // 获取用户头像
@@ -342,11 +342,11 @@ class AuthManager {
             
             if (error) throw error;
             
-            Utils.showNotification('密码重置邮件已发送', 'success');
+            Utils.showNotification('Password reset email sent', 'success');
             return { success: true };
         } catch (error) {
             console.error('Reset password error:', error);
-            Utils.showNotification('发送重置邮件失败', 'error');
+            Utils.showNotification('Failed to send reset email', 'error');
             return { success: false, error };
         }
     }
@@ -360,11 +360,11 @@ class AuthManager {
             
             if (error) throw error;
             
-            Utils.showNotification('密码更新成功', 'success');
+            Utils.showNotification('Password updated successfully', 'success');
             return { success: true };
         } catch (error) {
             console.error('Update password error:', error);
-            Utils.showNotification('密码更新失败', 'error');
+            Utils.showNotification('Failed to update password', 'error');
             return { success: false, error };
         }
     }
@@ -377,17 +377,17 @@ class AuthManager {
         const confirmBtn = document.getElementById('modal-confirm');
         const cancelBtn = document.getElementById('modal-cancel');
         
-        modalTitle.textContent = '重置密码';
+        modalTitle.textContent = 'Reset Password';
         modalBody.innerHTML = `
             <form id="reset-password-form">
                 <div class="form-group">
-                    <label for="reset-email">邮箱地址</label>
+                    <label for="reset-email">Email Address</label>
                     <input type="email" id="reset-email" name="email" required>
                 </div>
             </form>
         `;
         
-        confirmBtn.textContent = '发送重置邮件';
+        confirmBtn.textContent = 'Send Reset Email';
         
         // 清除之前的事件监听器
         const newConfirmBtn = confirmBtn.cloneNode(true);
