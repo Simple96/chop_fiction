@@ -949,9 +949,9 @@
                     <p>&copy; 2025 Novica. All rights reserved.</p>
                 </div>
                 <div class="footer-legal">
-                    <a href="#" onclick="openModal('privacy-modal')">Privacy Policy</a>
-                    <a href="#" onclick="openModal('terms-modal')">Terms of Service</a>
-                    <a href="#" onclick="openModal('cookie-modal')">Cookie Policy</a>
+                    <a href="#" onclick="openModal('privacy-modal', event)">Privacy Policy</a>
+                    <a href="#" onclick="openModal('terms-modal', event)">Terms of Service</a>
+                    <a href="#" onclick="openModal('cookie-modal', event)">Cookie Policy</a>
                 </div>
             </div>
         </div>
@@ -1091,7 +1091,10 @@
 
     <script>
         // Modal functions
-        function openModal(modalId) {
+        function openModal(modalId, event) {
+            if (event) {
+                event.preventDefault();
+            }
             document.getElementById(modalId).style.display = 'block';
             document.body.style.overflow = 'hidden';
         }
