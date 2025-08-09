@@ -550,7 +550,7 @@ body {
 .auth-header {
     background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
     color: white;
-    padding: 8px 30px;
+    padding: 4px 30px;
     text-align: center;
     border-bottom: 2px solid #34495E;
 }
