@@ -1,6 +1,8 @@
 -- 清理现有数据（如果存在）
 DELETE FROM chapters;
-DELETE FROM user_purchases;
+-- 迁移到订阅制后，清理 legacy 与订阅数据工具脚本
+DELETE FROM legacy_user_purchases;
+DELETE FROM user_subscriptions;
 DELETE FROM user_bookshelf;
 DELETE FROM novels;
 

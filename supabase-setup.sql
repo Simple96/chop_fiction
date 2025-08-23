@@ -36,14 +36,36 @@ CREATE TABLE IF NOT EXISTS chapters (
   UNIQUE(novel_id, chapter_number)
 );
 
--- 创建用户购买记录表
-CREATE TABLE IF NOT EXISTS user_purchases (
+-- 清理旧表（逐本购买）
+DROP VIEW IF EXISTS user_purchases;
+DROP TABLE IF EXISTS user_purchases;
+
+-- 订阅信息表（用于统一访问控制）
+CREATE TABLE IF NOT EXISTS user_subscriptions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  novel_id UUID REFERENCES novels(id) ON DELETE CASCADE,
-  purchased_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  UNIQUE(user_id, novel_id)
+  stripe_subscription_id TEXT UNIQUE,
+  stripe_customer_id TEXT,
+  status TEXT NOT NULL, -- active, canceled, past_due, etc.
+  current_period_start TIMESTAMP WITH TIME ZONE,
+  current_period_end TIMESTAMP WITH TIME ZONE,
+  interval TEXT, -- month, year
+  amount DECIMAL(10,2),
+  currency TEXT DEFAULT 'usd',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+-- 兼容视图：基于有效订阅展开为对所有小说的访问权
+CREATE OR REPLACE VIEW user_purchases AS
+  SELECT
+    gen_random_uuid() AS id,
+    us.user_id,
+    n.id AS novel_id,
+    COALESCE(us.current_period_start, NOW()) AS purchased_at
+  FROM user_subscriptions us
+  JOIN novels n ON TRUE
+  WHERE us.status = 'active' AND us.current_period_end > NOW();
 
 -- 创建用户书架表
 CREATE TABLE IF NOT EXISTS user_bookshelf (
@@ -59,7 +81,7 @@ CREATE TABLE IF NOT EXISTS user_bookshelf (
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE novels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chapters ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_purchases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_bookshelf ENABLE ROW LEVEL SECURITY;
 
 -- 创建安全策略
@@ -74,9 +96,9 @@ CREATE POLICY "所有人都可以查看小说" ON novels FOR SELECT USING (true)
 -- chapters 表策略（所有人都可以查看）
 CREATE POLICY "所有人都可以查看章节" ON chapters FOR SELECT USING (true);
 
--- user_purchases 表策略
-CREATE POLICY "用户可以查看自己的购买记录" ON user_purchases FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "用户可以创建购买记录" ON user_purchases FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- user_subscriptions 表策略
+CREATE POLICY "用户可以查看自己的订阅" ON user_subscriptions FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "用户可以新增或更新自己的订阅" ON user_subscriptions FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- user_bookshelf 表策略
 CREATE POLICY "用户可以查看自己的书架" ON user_bookshelf FOR SELECT USING (auth.uid() = user_id);

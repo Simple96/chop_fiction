@@ -170,19 +170,19 @@ class NovelDetailManager {
             }
         }
         
-        // 购买按钮
-        if (this.currentNovel.price > 0 && !this.isPurchased) {
+        // 订阅按钮（订阅制）
+        if (!this.isPurchased) {
             buttons.push(`
-                <button class="btn btn-primary purchase-btn">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Purchase Novel ${Utils.formatPrice(this.currentNovel.price)}</span>
+                <button class="btn btn-primary subscribe-btn">
+                    <i class="fas fa-crown"></i>
+                    <span>Upgrade to Premium</span>
                 </button>
             `);
-        } else if (this.isPurchased) {
+        } else {
             buttons.push(`
                 <button class="btn btn-success" disabled>
                     <i class="fas fa-check"></i>
-                    <span>Purchased</span>
+                    <span>Premium Active</span>
                 </button>
             `);
         }
@@ -255,11 +255,20 @@ class NovelDetailManager {
             });
         }
         
-        // 购买按钮
-        const purchaseBtn = container.querySelector('.purchase-btn');
-        if (purchaseBtn) {
-            purchaseBtn.addEventListener('click', () => {
-                this.purchaseNovel();
+        // 订阅按钮
+        const subscribeBtn = container.querySelector('.subscribe-btn');
+        if (subscribeBtn) {
+            subscribeBtn.addEventListener('click', async () => {
+                if (!window.authManager.isAuthenticated()) {
+                    Utils.showNotification('Please login first', 'warning');
+                    return;
+                }
+                // 打开订阅选择弹窗
+                if (window.stripeService) {
+                    window.stripeService.showSubscriptionModal();
+                } else {
+                    Utils.showNotification('Subscription service unavailable', 'error');
+                }
             });
         }
         
@@ -276,7 +285,7 @@ class NovelDetailManager {
         const lockedChapters = container.querySelectorAll('.chapter-item.locked');
         lockedChapters.forEach(item => {
             item.addEventListener('click', () => {
-                Utils.showNotification('Please purchase the novel to unlock all chapters', 'warning');
+                Utils.showNotification('Please subscribe to unlock all chapters', 'warning');
             });
         });
     }

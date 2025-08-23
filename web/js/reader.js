@@ -316,14 +316,12 @@ class ReaderManager {
         }
         
         const nextChapterNumber = this.chapterNumber + 1;
-        const nextChapter = this.chapters.find(c => c.chapter_number === nextChapterNumber);
         
-        // 检查下一章是否可以阅读
-        if (nextChapter && !nextChapter.is_free) {
-            // 检查是否已购买
-            const purchaseResult = await window.supabaseClient.checkPurchase(this.currentNovel.id);
-            if (!purchaseResult.success || !purchaseResult.purchased) {
-                Utils.showNotification('Next chapter requires purchase to read', 'warning');
+        // 检查是否需要订阅才能阅读
+        if (nextChapterNumber > CONFIG.FREE_CHAPTERS_COUNT) {
+            const hasSubscription = await this.checkSubscriptionAccess();
+            if (!hasSubscription) {
+                this.showSubscriptionPrompt(nextChapterNumber);
                 return;
             }
         }
@@ -338,13 +336,11 @@ class ReaderManager {
             return;
         }
         
-        const chapter = this.chapters.find(c => c.chapter_number === chapterNumber);
-        
-        // 检查章节是否可以阅读
-        if (chapter && !chapter.is_free) {
-            const purchaseResult = await window.supabaseClient.checkPurchase(this.currentNovel.id);
-            if (!purchaseResult.success || !purchaseResult.purchased) {
-                Utils.showNotification('This chapter requires purchase to read', 'warning');
+        // 检查是否需要订阅才能阅读
+        if (chapterNumber > CONFIG.FREE_CHAPTERS_COUNT) {
+            const hasSubscription = await this.checkSubscriptionAccess();
+            if (!hasSubscription) {
+                this.showSubscriptionPrompt(chapterNumber);
                 return;
             }
         }
@@ -448,8 +444,8 @@ class ReaderManager {
     }
     
     // 显示章节目录（可选功能）
-    showChapterList() {
-        if (this.chapters.length === 0) {
+    async showChapterList() {
+        if (this.currentNovel.total_chapters === 0) {
             Utils.showNotification('Chapter list is empty', 'info');
             return;
         }
@@ -462,36 +458,61 @@ class ReaderManager {
         
         modalTitle.textContent = 'Chapter List';
         
-        const chaptersList = this.chapters.map(chapter => {
-            const isLocked = !chapter.is_free;
-            const isCurrent = chapter.chapter_number === this.chapterNumber;
-            const statusText = chapter.is_free ? 'Free' : 'Paid';
+        // 检查用户订阅状态
+        const hasSubscription = await this.checkSubscriptionAccess();
+        
+        // 生成章节列表
+        const chaptersList = [];
+        for (let i = 1; i <= this.currentNovel.total_chapters; i++) {
+            const isFree = i <= CONFIG.FREE_CHAPTERS_COUNT;
+            const isLocked = !isFree && !hasSubscription;
+            const isCurrent = i === this.chapterNumber;
+            const statusText = isFree ? 'Free' : (hasSubscription ? 'Unlocked' : 'Locked');
+            const statusColor = isFree ? '#28a745' : (hasSubscription ? '#17a2b8' : '#ffc107');
             
-            return `
+            chaptersList.push(`
                 <div class="chapter-list-item ${isLocked ? 'locked' : ''} ${isCurrent ? 'current' : ''}" 
-                     data-chapter="${chapter.chapter_number}"
+                     data-chapter="${i}"
                      style="
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
                         padding: 12px;
                         border-bottom: 1px solid #f0f0f0;
-                        cursor: pointer;
+                        cursor: ${isLocked ? 'not-allowed' : 'pointer'};
                         transition: background-color 0.3s ease;
                         ${isCurrent ? 'background-color: #fff5f5; border-left: 3px solid #C0392B;' : ''}
                         ${isLocked ? 'opacity: 0.6;' : ''}
                      ">
-                    <span>Chapter ${chapter.chapter_number}</span>
-                    <span style="font-size: 12px; color: ${chapter.is_free ? '#28a745' : '#ffc107'};">
-                        ${statusText}
-                    </span>
+                    <span>Chapter ${i}</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 12px; color: ${statusColor};">
+                            ${statusText}
+                        </span>
+                        ${isLocked ? '<i class="fas fa-lock" style="color: #ffc107; font-size: 12px;"></i>' : ''}
+                    </div>
                 </div>
-            `;
-        }).join('');
+            `);
+        }
         
         modalBody.innerHTML = `
             <div style="max-height: 400px; overflow-y: auto;">
-                ${chaptersList}
+                ${chaptersList.join('')}
+                ${!hasSubscription ? `
+                    <div class="chapter-list-notice" style="
+                        padding: 16px;
+                        background: #fff5f5;
+                        border-radius: 8px;
+                        margin-top: 16px;
+                        text-align: center;
+                        border-left: 3px solid #C0392B;
+                    ">
+                        <i class="fas fa-info-circle" style="color: #C0392B; margin-right: 8px;"></i>
+                        <span style="color: #666; font-size: 14px;">
+                            Subscribe to unlock all chapters beyond Chapter ${CONFIG.FREE_CHAPTERS_COUNT}
+                        </span>
+                    </div>
+                ` : ''}
             </div>
         `;
         
@@ -505,6 +526,15 @@ class ReaderManager {
                 const chapterNumber = parseInt(item.getAttribute('data-chapter'));
                 modal.classList.add('hidden');
                 this.goToChapter(chapterNumber);
+            });
+        });
+        
+        // 绑定锁定章节点击事件（显示订阅提示）
+        modalBody.querySelectorAll('.chapter-list-item.locked').forEach(item => {
+            item.addEventListener('click', () => {
+                const chapterNumber = parseInt(item.getAttribute('data-chapter'));
+                modal.classList.add('hidden');
+                this.showSubscriptionPrompt(chapterNumber);
             });
         });
         
@@ -550,6 +580,183 @@ class ReaderManager {
     getReadingProgress() {
         if (!this.currentNovel || !this.chapterNumber) return 0;
         return Math.round((this.chapterNumber / this.currentNovel.total_chapters) * 100);
+    }
+    
+    // 检查订阅访问权限
+    async checkSubscriptionAccess() {
+        try {
+            if (!window.authManager.isAuthenticated()) {
+                return false;
+            }
+            
+            const result = await window.supabaseClient.hasValidSubscription();
+            return result.success && result.hasSubscription;
+        } catch (error) {
+            console.error('Check subscription access error:', error);
+            return false;
+        }
+    }
+    
+    // 显示订阅提示
+    showSubscriptionPrompt(chapterNumber) {
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const confirmBtn = document.getElementById('modal-confirm');
+        const cancelBtn = document.getElementById('modal-cancel');
+        
+        modalTitle.textContent = 'Subscription Required';
+        
+        modalBody.innerHTML = `
+            <div class="subscription-prompt">
+                <div class="prompt-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Unlock All Chapters</h3>
+                <p>You've reached the end of the free preview! The first ${CONFIG.FREE_CHAPTERS_COUNT} chapters are free for all readers.</p>
+                <p>To continue reading <strong>Chapter ${chapterNumber}</strong> and beyond, please subscribe to our service.</p>
+                
+                <div class="subscription-benefits">
+                    <h4>What you get with a subscription:</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Unlimited access to all novels</li>
+                        <li><i class="fas fa-check"></i> Read beyond first ${CONFIG.FREE_CHAPTERS_COUNT} chapters</li>
+                        <li><i class="fas fa-check"></i> No advertisements</li>
+                        <li><i class="fas fa-check"></i> Early access to new releases</li>
+                        <li><i class="fas fa-check"></i> Support our AI authors</li>
+                    </ul>
+                </div>
+                
+                <div class="pricing-preview">
+                    <div class="price-option">
+                        <strong>Monthly:</strong> ${window.stripeService.formatPrice(CONFIG.SUBSCRIPTION_PRICES.monthly.amount)}/month
+                    </div>
+                    <div class="price-option popular">
+                        <strong>Yearly:</strong> ${window.stripeService.formatPrice(CONFIG.SUBSCRIPTION_PRICES.yearly.amount)}/year 
+                        <span class="save-badge">Save 17%!</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 添加样式
+        if (!document.querySelector('.subscription-prompt-styles')) {
+            const styles = document.createElement('style');
+            styles.className = 'subscription-prompt-styles';
+            styles.textContent = `
+                .subscription-prompt {
+                    text-align: center;
+                    padding: 20px 0;
+                }
+                
+                .prompt-icon {
+                    font-size: 48px;
+                    color: #C0392B;
+                    margin-bottom: 20px;
+                }
+                
+                .subscription-prompt h3 {
+                    color: #2C3E50;
+                    font-size: 24px;
+                    margin-bottom: 16px;
+                }
+                
+                .subscription-prompt p {
+                    color: #666;
+                    margin-bottom: 16px;
+                    line-height: 1.6;
+                }
+                
+                .subscription-benefits {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin: 20px 0;
+                    text-align: left;
+                }
+                
+                .subscription-benefits h4 {
+                    color: #2C3E50;
+                    margin-bottom: 12px;
+                    text-align: center;
+                }
+                
+                .subscription-benefits ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                
+                .subscription-benefits li {
+                    padding: 6px 0;
+                    color: #333;
+                }
+                
+                .subscription-benefits i {
+                    color: #28a745;
+                    margin-right: 8px;
+                    width: 16px;
+                }
+                
+                .pricing-preview {
+                    display: flex;
+                    gap: 16px;
+                    justify-content: center;
+                    margin: 20px 0;
+                }
+                
+                .price-option {
+                    background: white;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    padding: 16px;
+                    flex: 1;
+                    max-width: 200px;
+                    position: relative;
+                }
+                
+                .price-option.popular {
+                    border-color: #C0392B;
+                    background: #fff5f5;
+                }
+                
+                .save-badge {
+                    position: absolute;
+                    top: -8px;
+                    right: -8px;
+                    background: #28a745;
+                    color: white;
+                    font-size: 10px;
+                    padding: 2px 6px;
+                    border-radius: 12px;
+                    font-weight: 600;
+                }
+            `;
+            document.head.appendChild(styles);
+        }
+        
+        // 更新按钮
+        confirmBtn.textContent = 'Choose Subscription Plan';
+        confirmBtn.style.display = 'inline-block';
+        cancelBtn.textContent = 'Maybe Later';
+        
+        // 绑定确认按钮事件
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        newConfirmBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            window.stripeService.showSubscriptionModal();
+        });
+        
+        // 绑定取消按钮事件
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        newCancelBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+        
+        // 显示模态框
+        modal.classList.remove('hidden');
     }
 }
 
