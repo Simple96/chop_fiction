@@ -3,12 +3,25 @@ class StripeService {
     constructor() {
         this.stripe = null;
         this.isInitialized = false;
-        this.init();
+        // 延迟初始化，等待页面完全加载
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => this.init(), 100);
+            });
+        } else {
+            setTimeout(() => this.init(), 100);
+        }
     }
     
     // 初始化 Stripe
     async init() {
         try {
+            // 检查CONFIG是否已加载
+            if (!window.CONFIG || !CONFIG.STRIPE_PUBLISHABLE_KEY) {
+                console.error('CONFIG or STRIPE_PUBLISHABLE_KEY not available');
+                throw new Error('Stripe configuration not available');
+            }
+            
             // 动态加载 Stripe.js
             if (!window.Stripe) {
                 await this.loadStripeScript();
@@ -17,6 +30,7 @@ class StripeService {
             // 初始化 Stripe 客户端
             this.stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
             this.isInitialized = true;
+            console.log('Stripe initialized successfully');
         } catch (error) {
             console.error('Failed to initialize Stripe:', error);
             Utils.showNotification('Payment system initialization failed', 'error');
