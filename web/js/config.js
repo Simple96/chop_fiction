@@ -140,6 +140,8 @@ const Utils = {
     
     // 显示通知
     showNotification(message, type = 'info') {
+        console.log(`[${type.toUpperCase()}] ${message}`);
+        
         // 创建通知元素
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
