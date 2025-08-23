@@ -6,7 +6,7 @@ const CONFIG = {
     
     // Stripe 配置
     STRIPE_PUBLISHABLE_KEY: 'pk_live_51RuPrBRvGg0dcqdEfvgbU7CSOAfhQkNYHE5bYpgZnhdmsOlmJ4oOEo0UuB2ph9T7QTk1wgJCEUGuGWXgoceVxWLA00cz7fhPZ5',
-    STRIPE_MONTHLY_PRICE_ID: 'price_1RuQKlRvGg0dcqdESSJJcCtk',
+    STRIPE_MONTHLY_PRICE_ID: 'price_1RzFf4RvGg0dcqdE1mixmr6G',
     STRIPE_YEARLY_PRICE_ID: 'price_1RuQLeRvGg0dcqdEeqZi30cm',
     
     // 应用设置
@@ -63,7 +63,7 @@ const CONFIG = {
     FREE_CHAPTERS_COUNT: 3, // 免费章节数量
     SUBSCRIPTION_PRICES: {
         monthly: {
-            amount: 9.99,
+            amount: 0.01,
             currency: 'USD',
             interval: 'month'
         },
