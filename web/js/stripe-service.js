@@ -311,7 +311,7 @@ class StripeService {
             {
                 id: 'yearly',
                 name: 'Yearly Subscription',
-                description: 'Best value for long-term readers',
+                description: 'Best value - 2 months free!',
                 price: CONFIG.SUBSCRIPTION_PRICES.yearly.amount,
                 currency: CONFIG.SUBSCRIPTION_PRICES.yearly.currency,
                 interval: 'year',
@@ -321,7 +321,7 @@ class StripeService {
                     'Read beyond first 3 chapters',
                     'No ads',
                     'Early access to new releases',
-                    'One-time payment for the year'
+                    'Save 17% compared to monthly'
                 ],
                 popular: true
             }
