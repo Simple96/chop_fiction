@@ -283,7 +283,7 @@ class SupabaseClient {
     }
     
     // 添加到书架
-    async addToBookshelf(novelId) {
+    async addToBookshelf(novelId, showNotification = true) {
         try {
             if (!this.user) throw new Error('User not authenticated');
             
@@ -298,14 +298,22 @@ class SupabaseClient {
                 
             if (error) throw error;
             
-            Utils.showNotification('Added to bookshelf', 'success');
+            if (showNotification) {
+                Utils.showNotification('Added to bookshelf', 'success');
+            }
             return { success: true, data };
         } catch (error) {
             console.error('Add to bookshelf error:', error);
             if (error.code === '23505') {
-                Utils.showNotification('This novel is already in your bookshelf', 'warning');
+                // 书籍已经在书架中，不显示警告弹窗
+                if (showNotification) {
+                    Utils.showNotification('This novel is already in your bookshelf', 'warning');
+                }
+                return { success: true, data: null, alreadyExists: true };
             } else {
-                Utils.showNotification('Failed to add to bookshelf', 'error');
+                if (showNotification) {
+                    Utils.showNotification('Failed to add to bookshelf', 'error');
+                }
             }
             return { success: false, error };
         }

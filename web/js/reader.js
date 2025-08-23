@@ -354,9 +354,9 @@ class ReaderManager {
         if (!window.authManager.isAuthenticated()) return;
         
         try {
-            // 检查是否在书架中，如果不在则先添加
+            // 检查是否在书架中，如果不在则先添加（不显示通知）
             if (!window.bookshelfManager.isInBookshelf(this.currentNovel.id)) {
-                await window.bookshelfManager.addToBookshelf(this.currentNovel.id);
+                await window.bookshelfManager.addToBookshelf(this.currentNovel.id, false);
             }
             
             // 更新阅读进度

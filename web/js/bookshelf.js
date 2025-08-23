@@ -153,9 +153,9 @@ class BookshelfManager {
     }
     
     // 添加到书架
-    async addToBookshelf(novelId) {
+    async addToBookshelf(novelId, showNotification = true) {
         try {
-            const result = await window.supabaseClient.addToBookshelf(novelId);
+            const result = await window.supabaseClient.addToBookshelf(novelId, showNotification);
             
             if (result.success) {
                 // 重新加载书架
