@@ -409,36 +409,4 @@ window.app.setupGlobalErrorHandling();
 window.app.setupPerformanceMonitoring();
 window.app.setupOfflineDetection();
 
-// 开发环境下的调试工具
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    window.debug = {
-        app: window.app,
-        config: CONFIG,
-        utils: Utils,
-        managers: {
-            supabase: () => window.supabaseClient,
-            auth: () => window.authManager,
-            navigation: () => window.navigationManager,
-            bookshelf: () => window.bookshelfManager,
-            recommendations: () => window.recommendationsManager,
-            categories: () => window.categoriesManager,
-            profile: () => window.profileManager,
-            novelDetail: () => window.novelDetailManager,
-            reader: () => window.readerManager,
-            modal: () => window.modalManager
-        },
-        health: () => window.app.checkHealth(),
-        restart: () => window.app.restart(),
-        clearStorage: () => {
-            localStorage.clear();
-            sessionStorage.clear();
-            Utils.showNotification('存储已清空，请刷新页面', 'info');
-        }
-    };
-    
-    console.log('Debug tools available at window.debug');
-    console.log('Available commands:');
-    console.log('- debug.health() - Check app health');
-    console.log('- debug.restart() - Restart app');
-    console.log('- debug.clearStorage() - Clear all storage');
-}
+

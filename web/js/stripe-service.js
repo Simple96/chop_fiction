@@ -9,20 +9,6 @@ class StripeService {
     // 初始化 Stripe
     async init() {
         try {
-            console.log('=== StripeService.init() called ===');
-            
-            // 检查localStorage中的调试信息
-            const debugLog = localStorage.getItem('stripe_debug_log');
-            const redirectUrl = localStorage.getItem('stripe_redirect_url');
-            const sessionId = localStorage.getItem('stripe_session_id');
-            
-            if (debugLog || redirectUrl || sessionId) {
-                console.log('Found existing Stripe debug info:');
-                console.log('Debug log:', debugLog ? JSON.parse(debugLog) : null);
-                console.log('Redirect URL:', redirectUrl);
-                console.log('Session ID:', sessionId);
-            }
-            
             // 动态加载 Stripe.js
             if (!window.Stripe) {
                 await this.loadStripeScript();
@@ -31,8 +17,6 @@ class StripeService {
             // 初始化 Stripe 客户端
             this.stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
             this.isInitialized = true;
-            console.log('Stripe initialized successfully in test mode');
-            console.log('=== StripeService.init() completed ===');
         } catch (error) {
             console.error('Failed to initialize Stripe:', error);
             Utils.showNotification('Payment system initialization failed', 'error');
@@ -243,11 +227,19 @@ class StripeService {
                 throw new Error('User not authenticated');
             }
             
-            const response = await fetch('/api/create-portal-session', {
+            // 获取access token
+            const session = window.authManager.getCurrentSession();
+            const accessToken = session?.access_token;
+            
+            if (!accessToken) {
+                throw new Error('No access token available. Please log in again.');
+            }
+            
+            const response = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/create-portal-session`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.access_token}`
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify({
                     userId: user.id,
@@ -256,13 +248,16 @@ class StripeService {
             });
             
             if (!response.ok) {
-                throw new Error('Failed to create portal session');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create portal session');
             }
             
             const result = await response.json();
             
             if (result.success && result.url) {
                 window.location.href = result.url;
+            } else {
+                throw new Error(result.error || 'Failed to create portal session');
             }
             
             return result;
