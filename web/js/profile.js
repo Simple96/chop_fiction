@@ -85,14 +85,16 @@ class ProfileManager {
     }
     
     // 渲染用户资料
-    renderProfile(container) {
+    async renderProfile(container) {
         const user = window.authManager.getCurrentUser();
         const profileCard = this.createProfileCard();
+        const subscriptionCard = await this.createSubscriptionCard();
         const statsCard = this.createStatsCard();
         const actionsCard = this.createActionsCard();
         
         container.innerHTML = '';
         container.appendChild(profileCard);
+        container.appendChild(subscriptionCard);
         container.appendChild(statsCard);
         container.appendChild(actionsCard);
     }
@@ -177,6 +179,112 @@ class ProfileManager {
                 </div>
             </div>
         `;
+        
+        return card;
+    }
+    
+    // 创建订阅状态卡片
+    async createSubscriptionCard() {
+        const card = document.createElement('div');
+        card.className = 'profile-card subscription-card';
+        
+        // 获取订阅状态
+        const subscriptionResult = await window.supabaseClient.getUserSubscription();
+        
+        const subscription = subscriptionResult.success ? subscriptionResult.subscription : null;
+        const hasValidSubscription = subscription && subscription.status === 'active' && 
+                                   new Date(subscription.current_period_end) > new Date();
+        
+        if (hasValidSubscription) {
+            // 有效订阅
+            const endDate = new Date(subscription.current_period_end).toLocaleDateString();
+            const isYearly = subscription.interval === 'year';
+            
+            card.innerHTML = `
+                <div class="subscription-status active">
+                    <div class="subscription-header">
+                        <div class="subscription-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="subscription-info">
+                            <h3>Premium Member</h3>
+                            <p>You have unlimited access to all novels</p>
+                        </div>
+                        <div class="subscription-badge">
+                            <span class="badge-active">Active</span>
+                        </div>
+                    </div>
+                    <div class="subscription-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Plan:</span>
+                            <span class="detail-value">${isYearly ? 'Yearly' : 'Monthly'} Subscription</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Renewal Date:</span>
+                            <span class="detail-value">${endDate}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value status-active">
+                                <i class="fas fa-check-circle"></i>
+                                Active
+                            </span>
+                        </div>
+                    </div>
+                    <div class="subscription-actions">
+                        <button class="btn btn-outline manage-subscription-btn">
+                            <i class="fas fa-cog"></i>
+                            <span>Manage Subscription</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            // 无订阅或已过期
+            card.innerHTML = `
+                <div class="subscription-status inactive">
+                    <div class="subscription-header">
+                        <div class="subscription-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="subscription-info">
+                            <h3>Free Account</h3>
+                            <p>Access limited to first ${CONFIG.FREE_CHAPTERS_COUNT} chapters per novel</p>
+                        </div>
+                    </div>
+                    <div class="subscription-benefits">
+                        <h4>Upgrade to Premium for:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Unlimited access to all novels</li>
+                            <li><i class="fas fa-check"></i> Read beyond first ${CONFIG.FREE_CHAPTERS_COUNT} chapters</li>
+                            <li><i class="fas fa-check"></i> No advertisements</li>
+                            <li><i class="fas fa-check"></i> Early access to new releases</li>
+                        </ul>
+                    </div>
+                    <div class="subscription-pricing">
+                        <div class="price-option">
+                            <strong>Monthly:</strong> ${window.stripeService.formatPrice(CONFIG.SUBSCRIPTION_PRICES.monthly.amount)}/month
+                        </div>
+                        <div class="price-option popular">
+                            <strong>Yearly:</strong> ${window.stripeService.formatPrice(CONFIG.SUBSCRIPTION_PRICES.yearly.amount)}/year 
+                            <span class="save-text">Save 17%!</span>
+                        </div>
+                    </div>
+                    <div class="subscription-actions">
+                        <button class="btn btn-primary upgrade-btn">
+                            <i class="fas fa-crown"></i>
+                            <span>Upgrade to Premium</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 添加订阅卡片样式
+        this.addSubscriptionStyles();
+        
+        // 绑定事件
+        this.bindSubscriptionEvents(card, hasValidSubscription);
         
         return card;
     }
@@ -547,6 +655,208 @@ class ProfileManager {
     // 获取用户统计信息
     getUserStats() {
         return this.userStats;
+    }
+    
+    // 添加订阅样式
+    addSubscriptionStyles() {
+        if (document.querySelector('.subscription-card-styles')) return;
+        
+        const styles = document.createElement('style');
+        styles.className = 'subscription-card-styles';
+        styles.textContent = `
+            .subscription-card {
+                background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+                border: 1px solid #e0e0e0;
+            }
+            
+            .subscription-status.active {
+                background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+                border-left: 4px solid #C0392B;
+            }
+            
+            .subscription-header {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+            
+            .subscription-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            }
+            
+            .subscription-status.active .subscription-icon {
+                background: linear-gradient(135deg, #C0392B, #E74C3C);
+                color: white;
+            }
+            
+            .subscription-status.inactive .subscription-icon {
+                background: #f8f9fa;
+                color: #666;
+                border: 2px solid #e0e0e0;
+            }
+            
+            .subscription-info {
+                flex: 1;
+            }
+            
+            .subscription-info h3 {
+                margin: 0 0 4px 0;
+                color: #2C3E50;
+                font-size: 18px;
+                font-weight: 600;
+            }
+            
+            .subscription-info p {
+                margin: 0;
+                color: #666;
+                font-size: 14px;
+            }
+            
+            .subscription-badge {
+                display: flex;
+                align-items: center;
+            }
+            
+            .badge-active {
+                background: #28a745;
+                color: white;
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+            
+            .subscription-details {
+                background: white;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 20px;
+                border: 1px solid #f0f0f0;
+            }
+            
+            .detail-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #f8f9fa;
+            }
+            
+            .detail-item:last-child {
+                border-bottom: none;
+            }
+            
+            .detail-label {
+                color: #666;
+                font-size: 14px;
+            }
+            
+            .detail-value {
+                color: #2C3E50;
+                font-weight: 500;
+                font-size: 14px;
+            }
+            
+            .status-active {
+                color: #28a745 !important;
+            }
+            
+            .status-active i {
+                margin-right: 4px;
+            }
+            
+            .subscription-benefits {
+                margin-bottom: 20px;
+            }
+            
+            .subscription-benefits h4 {
+                color: #2C3E50;
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .subscription-benefits ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .subscription-benefits li {
+                padding: 6px 0;
+                color: #333;
+                font-size: 14px;
+            }
+            
+            .subscription-benefits i {
+                color: #28a745;
+                margin-right: 8px;
+                width: 16px;
+            }
+            
+            .subscription-pricing {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .price-option {
+                flex: 1;
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 12px;
+                text-align: center;
+                font-size: 14px;
+                position: relative;
+            }
+            
+            .price-option.popular {
+                border-color: #C0392B;
+                background: #fff5f5;
+            }
+            
+            .save-text {
+                color: #28a745;
+                font-size: 12px;
+                font-weight: 600;
+            }
+            
+            .subscription-actions {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+            }
+            
+            .subscription-actions .btn {
+                flex: 1;
+                max-width: 200px;
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+    
+    // 绑定订阅事件
+    bindSubscriptionEvents(card, hasValidSubscription) {
+        if (hasValidSubscription) {
+            const manageBtn = card.querySelector('.manage-subscription-btn');
+            manageBtn.addEventListener('click', () => {
+                window.stripeService.manageSubscription();
+            });
+        } else {
+            const upgradeBtn = card.querySelector('.upgrade-btn');
+            upgradeBtn.addEventListener('click', () => {
+                window.stripeService.showSubscriptionModal();
+            });
+        }
+        
+
     }
     
     // 刷新用户资料

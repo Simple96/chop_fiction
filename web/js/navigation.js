@@ -119,6 +119,12 @@ class NavigationManager {
         }));
     }
     
+    // 兼容旧代码的别名方法
+    // 有些地方调用了 switchScreen，这里做一个简单代理
+    switchScreen(screenName, data = null) {
+        this.navigateTo(screenName, data);
+    }
+    
     // 返回上一个屏幕
     navigateBack() {
         if (this.screenHistory.length > 0) {

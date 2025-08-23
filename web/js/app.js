@@ -39,6 +39,9 @@ class App {
             // 检查认证状态
             await this.checkAuthenticationState();
             
+            // 处理 URL 参数（如订阅成功/取消）
+            this.handleUrlParameters();
+            
             // 初始化完成
             this.initialized = true;
             this.hideLoadingScreen();
@@ -321,6 +324,70 @@ class App {
         window.addEventListener('offline', updateOnlineStatus);
     }
     
+    // 处理 URL 参数（支持 search 和 hash 两种形式）
+    handleUrlParameters() {
+        const processParams = (params) => {
+            const subscription = params.get('subscription');
+            if (!subscription) return false;
+            
+            switch (subscription) {
+                case 'success':
+                    setTimeout(async () => {
+                        // 检查是否有待处理的订阅
+                        const pendingSubscription = sessionStorage.getItem('pendingSubscription');
+                        if (pendingSubscription) {
+                            try {
+                                const subscriptionData = JSON.parse(pendingSubscription);
+                                
+                                // 触发支付成功事件
+                                const paymentSuccessEvent = new CustomEvent('subscriptionPaymentSuccess', {
+                                    detail: {
+                                        priceId: subscriptionData.priceId,
+                                        sessionId: urlParams.get('session_id'),
+                                        timestamp: subscriptionData.timestamp
+                                    }
+                                });
+                                
+                                window.dispatchEvent(paymentSuccessEvent);
+                                
+                                // 不要立即清除待处理的订阅信息，让订阅管理器处理
+                                
+                            } catch (error) {
+                                console.error('处理待处理订阅时出错:', error);
+                            }
+                        }
+                        
+                        // 跳转到个人中心查看订阅状态
+                        setTimeout(() => {
+                            window.navigationManager.switchScreen('profile');
+                        }, 1000);
+                    }, 500);
+                    break;
+                case 'cancelled':
+                    setTimeout(() => {
+                        Utils.showNotification('Subscription process was cancelled. You can try again anytime.', 'info');
+                    }, 500);
+                    break;
+            }
+            return true;
+        };
+
+        // 1) 优先处理 search (?subscription=...)
+        const handledSearch = processParams(new URLSearchParams(window.location.search));
+
+        // 2) 再处理 hash 中可能携带的参数 (#profile?subscription=...)
+        if (!handledSearch && window.location.hash.includes('?')) {
+            const hashQuery = window.location.hash.split('?')[1];
+            if (hashQuery) {
+                processParams(new URLSearchParams(hashQuery));
+            }
+        }
+
+        // 清理 URL（保留当前 hash 路由）
+        const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
+    
     // 应用信息
     getAppInfo() {
         return {
@@ -342,36 +409,4 @@ window.app.setupGlobalErrorHandling();
 window.app.setupPerformanceMonitoring();
 window.app.setupOfflineDetection();
 
-// 开发环境下的调试工具
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    window.debug = {
-        app: window.app,
-        config: CONFIG,
-        utils: Utils,
-        managers: {
-            supabase: () => window.supabaseClient,
-            auth: () => window.authManager,
-            navigation: () => window.navigationManager,
-            bookshelf: () => window.bookshelfManager,
-            recommendations: () => window.recommendationsManager,
-            categories: () => window.categoriesManager,
-            profile: () => window.profileManager,
-            novelDetail: () => window.novelDetailManager,
-            reader: () => window.readerManager,
-            modal: () => window.modalManager
-        },
-        health: () => window.app.checkHealth(),
-        restart: () => window.app.restart(),
-        clearStorage: () => {
-            localStorage.clear();
-            sessionStorage.clear();
-            Utils.showNotification('存储已清空，请刷新页面', 'info');
-        }
-    };
-    
-    console.log('Debug tools available at window.debug');
-    console.log('Available commands:');
-    console.log('- debug.health() - Check app health');
-    console.log('- debug.restart() - Restart app');
-    console.log('- debug.clearStorage() - Clear all storage');
-}
+

@@ -252,7 +252,7 @@ class CategoriesManager {
                 <div class="book-meta">
                     <span class="book-category">${Utils.getCategoryDisplayName(novel.category)}</span>
                     <span class="book-chapters">${novel.total_chapters} chapters</span>
-                    ${novel.price > 0 ? `<span class="book-price">${Utils.formatPrice(novel.price)}</span>` : ''}
+    
                     <span class="book-free">First ${freeChapters} chapters free</span>
                 </div>
             </div>

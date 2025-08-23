@@ -4,6 +4,11 @@ const CONFIG = {
     SUPABASE_URL: 'https://bbohqxwziavcqiwmcitw.supabase.co',
     SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJib2hxeHd6aWF2Y3Fpd21jaXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MDE3NDEsImV4cCI6MjA3MDA3Nzc0MX0.8MepqIP2eLmK6-TNw2JUGqobV_z0IIM9mZZi7kAvYOs',
     
+    // Stripe 配置
+    STRIPE_PUBLISHABLE_KEY: 'pk_live_51RuPrBRvGg0dcqdEfvgbU7CSOAfhQkNYHE5bYpgZnhdmsOlmJ4oOEo0UuB2ph9T7QTk1wgJCEUGuGWXgoceVxWLA00cz7fhPZ5',
+    STRIPE_MONTHLY_PRICE_ID: 'price_1RuQKlRvGg0dcqdESSJJcCtk',
+    STRIPE_YEARLY_PRICE_ID: 'price_1RuQLeRvGg0dcqdEeqZi30cm',
+    
     // 应用设置
     APP_NAME: 'Novica',
     APP_DESCRIPTION: 'AI-Condensed Chinese Web Novels',
@@ -53,6 +58,21 @@ const CONFIG = {
     // UI 设置
     ITEMS_PER_PAGE: 20,
     LOADING_TIMEOUT: 30000, // 30 seconds timeout
+    
+    // 付费模式设置
+    FREE_CHAPTERS_COUNT: 3, // 免费章节数量
+    SUBSCRIPTION_PRICES: {
+        monthly: {
+            amount: 9.99,
+            currency: 'USD',
+            interval: 'month'
+        },
+        yearly: {
+            amount: 99.99,
+            currency: 'USD',
+            interval: 'year'
+        }
+    },
     
     // Local storage keys
     STORAGE_KEYS: {
@@ -120,6 +140,8 @@ const Utils = {
     
     // 显示通知
     showNotification(message, type = 'info') {
+        console.log(`[${type.toUpperCase()}] ${message}`);
+        
         // 创建通知元素
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -310,8 +332,10 @@ const Utils = {
     
     // 处理图片加载错误
     handleImageError(img) {
-        img.src = 'https://via.placeholder.com/100x150?text=No+Image';
+        // 使用本地默认图片
+        img.src = '/assets/default_cover.png';
         img.onerror = null; // 防止无限循环
+        img.alt = 'Cover not available';
     },
     
     // 截断文本

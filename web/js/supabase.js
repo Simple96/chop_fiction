@@ -354,54 +354,23 @@ class SupabaseClient {
         }
     }
     
-    // 检查是否已购买
+    // 检查是否可阅读（订阅制：有有效订阅即可阅读全部非免费章节）
     async checkPurchase(novelId) {
         try {
             if (!this.user) return { success: true, purchased: false };
-            
-            const { data, error } = await this.client
-                .from('user_purchases')
-                .select('id')
-                .eq('user_id', this.user.id)
-                .eq('novel_id', novelId)
-                .single();
-                
-            if (error && error.code !== 'PGRST116') throw error;
-            
-            return { success: true, purchased: !!data };
+            const sub = await this.hasValidSubscription();
+            if (!sub.success) return { success: false, error: sub.error };
+            return { success: true, purchased: sub.hasSubscription };
         } catch (error) {
             console.error('Check purchase error:', error);
             return { success: false, error };
         }
     }
-    
-    // 购买小说
-    async purchaseNovel(novelId) {
-        try {
-            if (!this.user) throw new Error('User not authenticated');
-            
-            const { data, error } = await this.client
-                .from('user_purchases')
-                .insert({
-                    user_id: this.user.id,
-                    novel_id: novelId
-                })
-                .select()
-                .single();
-                
-            if (error) throw error;
-            
-            Utils.showNotification('Purchase successful!', 'success');
-            return { success: true, data };
-        } catch (error) {
-            console.error('Purchase novel error:', error);
-            if (error.code === '23505') {
-                Utils.showNotification('You have already purchased this novel', 'warning');
-            } else {
-                Utils.showNotification('Purchase failed, please try again later', 'error');
-            }
-            return { success: false, error };
-        }
+
+    // 购买小说（订阅制下不再支持逐本购买，统一提示走订阅）
+    async purchaseNovel() {
+        Utils.showNotification('Please subscribe to unlock all novels', 'info');
+        return { success: false, error: 'subscription_required' };
     }
     
     // 获取用户统计信息
@@ -410,7 +379,7 @@ class SupabaseClient {
             if (!this.user) throw new Error('User not authenticated');
             
             // 并行获取统计数据
-            const [bookshelfResult, purchaseResult] = await Promise.all([
+            const [bookshelfResult, purchaseResult, subscriptionResult] = await Promise.all([
                 this.client
                     .from('user_bookshelf')
                     .select('id')
@@ -418,7 +387,8 @@ class SupabaseClient {
                 this.client
                     .from('user_purchases')
                     .select('id')
-                    .eq('user_id', this.user.id)
+                    .eq('user_id', this.user.id),
+                this.getUserSubscription()
             ]);
             
             if (bookshelfResult.error) throw bookshelfResult.error;
@@ -428,11 +398,101 @@ class SupabaseClient {
                 success: true,
                 data: {
                     bookshelfCount: bookshelfResult.data.length,
-                    purchaseCount: purchaseResult.data.length
+                    purchaseCount: purchaseResult.data.length,
+                    hasSubscription: subscriptionResult.success && subscriptionResult.subscription?.status === 'active'
                 }
             };
         } catch (error) {
             console.error('Get user stats error:', error);
+            return { success: false, error };
+        }
+    }
+    
+    // 获取用户订阅信息
+    async getUserSubscription() {
+        try {
+            if (!this.user) {
+                console.log('getUserSubscription: User not authenticated');
+                return { success: true, subscription: null };
+            }
+            
+            console.log('getUserSubscription: Querying for user_id:', this.user.id);
+            
+            // 使用 .maybeSingle() 而不是 .single() 来避免 PGRST116 错误
+            const { data, error } = await this.client
+                .from('user_subscriptions')
+                .select('*')
+                .eq('user_id', this.user.id)
+                .maybeSingle();
+                
+            console.log('getUserSubscription: Query result:', { data, error });
+            
+            if (error) {
+                console.error('getUserSubscription: Database error:', error);
+                throw error;
+            }
+            
+            // data 为 null 表示没有找到记录，这是正常的
+            return { success: true, subscription: data };
+        } catch (error) {
+            console.error('Get user subscription error:', error);
+            return { success: false, error };
+        }
+    }
+    
+    // 创建或更新用户订阅
+    async upsertUserSubscription(subscriptionData) {
+        try {
+            if (!this.user) {
+                console.error('upsertUserSubscription: User not authenticated');
+                throw new Error('User not authenticated');
+            }
+            
+            const subscriptionRecord = {
+                user_id: this.user.id,
+                ...subscriptionData
+            };
+            
+            console.log('upsertUserSubscription: Upserting subscription:', subscriptionRecord);
+            
+            const { data, error } = await this.client
+                .from('user_subscriptions')
+                .upsert(subscriptionRecord)
+                .select()
+                .maybeSingle();
+                
+            console.log('upsertUserSubscription: Upsert result:', { data, error });
+            
+            if (error) {
+                console.error('upsertUserSubscription: Database error:', error);
+                throw error;
+            }
+            
+            console.log('upsertUserSubscription: Successfully upserted subscription:', data);
+            return { success: true, data };
+        } catch (error) {
+            console.error('Upsert user subscription error:', error);
+            return { success: false, error };
+        }
+    }
+    
+    // 检查用户是否有有效订阅
+    async hasValidSubscription() {
+        try {
+            const result = await this.getUserSubscription();
+            if (!result.success || !result.subscription) {
+                return { success: true, hasSubscription: false };
+            }
+            
+            const subscription = result.subscription;
+            const now = new Date();
+            const expiryDate = new Date(subscription.current_period_end);
+            
+            const isValid = subscription.status === 'active' && expiryDate > now;
+            
+            return { success: true, hasSubscription: isValid };
+        } catch (error) {
+            console.error('Check valid subscription error:', error);
             return { success: false, error };
         }
     }
