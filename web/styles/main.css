@@ -393,11 +393,7 @@ body {
     color: #666;
 }
 
-.book-price {
-    font-size: 12px;
-    color: #D4AF37;
-    font-weight: bold;
-}
+
 
 /* 分类网格 */
 .categories-grid {
@@ -846,7 +842,7 @@ body {
     color: #155724;
 }
 
-.chapter-status.paid {
+.chapter-status.premium {
     background-color: #fff3cd;
     color: #856404;
 }

@@ -152,7 +152,7 @@ class RecommendationsManager {
                     <span class="book-category">${Utils.getCategoryDisplayName(novel.category)}</span>
                     <span class="book-chapters">${novel.total_chapters} chapters</span>
                     <span class="book-chapters">First ${freePercentage}% free</span>
-                    ${novel.price > 0 ? `<span class="book-price">${Utils.formatPrice(novel.price)}</span>` : ''}
+    
                 </div>
             </div>
         `;

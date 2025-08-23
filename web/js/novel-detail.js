@@ -40,11 +40,8 @@ class NovelDetailManager {
         Utils.showLoading(container, 'Loading novel details...');
         
         try {
-            // 并行加载章节列表和购买状态
-            const [chaptersResult, purchaseResult] = await Promise.all([
-                window.supabaseClient.getChapters(novel.id),
-                window.supabaseClient.checkPurchase(novel.id)
-            ]);
+            // 加载章节列表
+            const chaptersResult = await window.supabaseClient.getChapters(novel.id);
             
             if (chaptersResult.success) {
                 this.chapters = chaptersResult.data || [];
@@ -54,11 +51,11 @@ class NovelDetailManager {
                 console.error('Failed to load chapters');
             }
             
-            if (purchaseResult.success) {
-                this.isPurchased = purchaseResult.purchased;
-            } else {
-                this.isPurchased = false;
-            }
+            // 检查用户订阅状态
+            const subscriptionResult = await window.supabaseClient.getUserSubscription();
+            this.isPurchased = subscriptionResult.success && subscriptionResult.subscription && 
+                              subscriptionResult.subscription.status === 'active' &&
+                              new Date(subscriptionResult.subscription.current_period_end) > new Date();
             
             this.renderNovelDetail(container);
         } catch (error) {
@@ -119,10 +116,7 @@ class NovelDetailManager {
                             <div class="novel-stat-value">${Utils.getCategoryDisplayName(novel.category)}</div>
                             <div class="novel-stat-label">Category</div>
                         </div>
-                        <div class="novel-stat">
-                            <div class="novel-stat-value">${Utils.formatPrice(novel.price)}</div>
-                            <div class="novel-stat-label">Price</div>
-                        </div>
+
                     </div>
                     
                     <div class="novel-actions">
@@ -207,8 +201,8 @@ class NovelDetailManager {
         
         const chaptersList = this.chapters.map(chapter => {
             const isLocked = !chapter.is_free && !this.isPurchased;
-            const statusClass = chapter.is_free ? 'free' : (this.isPurchased ? 'paid' : 'locked');
-            const statusText = chapter.is_free ? 'Free' : (this.isPurchased ? 'Owned' : 'Paid');
+            const statusClass = chapter.is_free ? 'free' : (this.isPurchased ? 'premium' : 'locked');
+            const statusText = chapter.is_free ? 'Free' : (this.isPurchased ? 'Premium' : 'Premium Required');
             
             return `
                 <div class="chapter-item ${isLocked ? 'locked' : ''}" data-chapter="${chapter.chapter_number}">
@@ -285,7 +279,7 @@ class NovelDetailManager {
         const lockedChapters = container.querySelectorAll('.chapter-item.locked');
         lockedChapters.forEach(item => {
             item.addEventListener('click', () => {
-                Utils.showNotification('Please subscribe to unlock all chapters', 'warning');
+                Utils.showNotification('Please upgrade to Premium to unlock all chapters', 'warning');
             });
         });
     }
@@ -302,7 +296,7 @@ class NovelDetailManager {
         
         // 检查章节是否可以阅读
         if (!chapter.is_free && !this.isPurchased) {
-            Utils.showNotification('This chapter requires purchase to read', 'warning');
+            Utils.showNotification('This chapter requires Premium subscription to read', 'warning');
             return;
         }
         
@@ -340,27 +334,7 @@ class NovelDetailManager {
         );
     }
     
-    // 购买小说
-    async purchaseNovel() {
-        if (!window.authManager.isAuthenticated()) {
-            Utils.showNotification('Please login first', 'warning');
-            return;
-        }
-        
-        window.navigationManager.showConfirmDialog(
-            'Purchase Confirmation',
-            `Are you sure you want to purchase "${this.currentNovel.title}"?\nPrice: ${Utils.formatPrice(this.currentNovel.price)}`,
-            async () => {
-                const result = await window.supabaseClient.purchaseNovel(this.currentNovel.id);
-                if (result.success) {
-                    this.isPurchased = true;
-                    // 重新渲染页面
-                    const container = document.getElementById('novel-detail-content');
-                    this.renderNovelDetail(container);
-                }
-            }
-        );
-    }
+
     
     // 更新操作按钮
     updateActionButtons() {
@@ -390,8 +364,8 @@ class NovelDetailManager {
         return this.chapters;
     }
     
-    // 检查是否已购买
-    isPurchasedNovel() {
+    // 检查是否有Premium订阅
+    hasPremiumSubscription() {
         return this.isPurchased;
     }
     
@@ -412,8 +386,8 @@ class NovelDetailManager {
         return this.chapters.filter(chapter => chapter.is_free);
     }
     
-    // 获取付费章节
-    getPaidChapters() {
+    // 获取Premium章节
+    getPremiumChapters() {
         return this.chapters.filter(chapter => !chapter.is_free);
     }
     
